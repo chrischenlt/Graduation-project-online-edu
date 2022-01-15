@@ -1,0 +1,30 @@
+server:
+  port: 8110
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: service_edu # 服务名
+  datasource: # mysql数据库连接
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.111.101:3306/online_edu?serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+  jackson: #返回的json的全局时间格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  redis:
+    host: 192.168.111.101
+    port: 6379
+
+#mp日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#logging:
+#  level:
+#    root: INFO
+
+

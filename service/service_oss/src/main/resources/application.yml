@@ -1,0 +1,15 @@
+server:
+  port: 8120
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: service_oss # 服务名
+
+aliyun:
+  oss:
+    endpoint: oss-cn-shenzhen.aliyuncs.com
+    keyid: LTAI5tFLtkMDMom49kmTaYBH
+    keysecret: nMAvAMYdnm4tWFJLEZPuQ8zyXdttrz
+    bucketname: graduation-project-online-edu

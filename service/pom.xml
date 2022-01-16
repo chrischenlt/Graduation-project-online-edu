@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>service_edu</module>
+        <module>service_oss</module>
     </modules>
 
     <dependencies>
@@ -95,9 +96,15 @@
             <artifactId>gson</artifactId>
         </dependency>
 
+        <!--日期时间工具-->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-com.clt.service.edu.test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>com.clt.service.edu.test</scope>
             <exclusions>
                 <exclusion>

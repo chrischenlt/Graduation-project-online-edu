@@ -87,7 +87,7 @@ public class TeacherController {
 
 
     @ApiOperation("根据id获取讲师信息")
-    @PostMapping("get/{id}")
+    @GetMapping("get/{id}")
     public R getDataById(@ApiParam("讲师对象") @PathVariable String id) {
         Teacher teacher = teacherService.getById(id);
         if (Objects.nonNull(teacher)) {

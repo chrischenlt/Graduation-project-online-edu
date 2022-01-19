@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.result.R;
 import com.clt.service.edu.entity.Teacher;
 import com.clt.service.edu.entity.vo.TeacherQueryVo;
+import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.service.TeacherService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -30,7 +32,6 @@ import java.util.Objects;
 @RequestMapping("/admin/edu/teacher")
 public class TeacherController {
 
-
     @Autowired
     private TeacherService teacherService;
 
@@ -46,6 +47,9 @@ public class TeacherController {
     @ApiOperation("根据Id删除讲师")
     @DeleteMapping("remove/{id}")
     public R removeById(@ApiParam("讲师Id") @PathVariable String id) {
+
+        teacherService.removeAvatarById(id);
+
         if (teacherService.removeById(id)) {
             return R.ok().message("删除成功");
         }
@@ -94,6 +98,26 @@ public class TeacherController {
             return R.ok().data("item", teacher);
         }
         return R.error().message("数据不存在");
+    }
+
+
+    @ApiOperation("根据Id列表删除讲师")
+    @DeleteMapping("batch-remove")
+    public R removeRows(@ApiParam(value = "讲师Id", required = true) @RequestBody List<String> idList) {
+        if (teacherService.removeByIds(idList)) {
+            return R.ok().message("删除成功");
+        }
+        return R.ok().message("删除失败");
+    }
+
+
+    @ApiOperation("根据关键词查询讲师名列表")
+    @GetMapping("list/name/{key}")
+    public R selectNameListByKey(
+            @ApiParam(value = "关键词", required = true)
+            @PathVariable String key) {
+        List<Map<String, Object>> nameList = teacherService.selectNameList(key);
+        return R.ok().data("nameList", nameList);
     }
 
 }

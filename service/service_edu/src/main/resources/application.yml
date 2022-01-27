@@ -19,6 +19,10 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+    sentinel:
+      transport:
+        port: 8081
+        dashboard: localhost:8080
   redis:
     host: 192.168.111.101
     port: 6379
@@ -27,6 +31,7 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:com/clt/service/edu/mapper/xml/*.xml
 
 #logging:
 #  level:
@@ -37,3 +42,6 @@ ribbon:
   ConnectTimeout: 5000 #连接建立的超时时长  ，默认1s
   ReadTimeOut: 5000 #处理请求的超市时间  ，默认1s
 
+feign:
+  sentinel:
+    enabled: true

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,7 +32,7 @@ import java.util.Objects;
 @Service
 public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> implements TeacherService {
 
-    @Autowired
+    @Resource
     private OssFileService ossFileService;
 
     @Override

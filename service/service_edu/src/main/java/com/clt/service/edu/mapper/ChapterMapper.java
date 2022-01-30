@@ -3,6 +3,7 @@ package com.clt.service.edu.mapper;
 import com.clt.service.edu.entity.Chapter;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.mapstruct.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -12,7 +13,7 @@ import org.mapstruct.Mapper;
  * @author chenlt
  * @since 2022-01-06
  */
-@Mapper
+@Repository
 public interface ChapterMapper extends BaseMapper<Chapter> {
 
 }

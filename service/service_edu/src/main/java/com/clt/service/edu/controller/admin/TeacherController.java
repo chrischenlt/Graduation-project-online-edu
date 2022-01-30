@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.result.R;
 import com.clt.service.edu.entity.Teacher;
 import com.clt.service.edu.entity.vo.TeacherQueryVo;
-import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.service.TeacherService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,7 +39,7 @@ public class TeacherController {
     @GetMapping("list")
     public R listAll() {
         List<Teacher> teacherList = teacherService.list();
-        return R.ok().data("item", teacherList);
+        return R.ok().data("items", teacherList);
     }
 
 

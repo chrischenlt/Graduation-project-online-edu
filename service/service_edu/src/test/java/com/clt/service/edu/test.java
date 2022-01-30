@@ -1,6 +1,9 @@
 package com.clt.service.edu;
 
+import com.clt.service.edu.entity.Course;
 import com.clt.service.edu.entity.Teacher;
+import com.clt.service.edu.entity.form.CourseInfoForm;
+import com.clt.service.edu.mapper.CourseMapper;
 import com.clt.service.edu.service.TeacherService;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RBatch;
@@ -24,13 +27,11 @@ public class test {
     @Resource
     private RedisTemplate redisTemplate;
     @Resource
-    private TeacherService teacherService;
+    private CourseMapper courseMapper;
 
     @Test
     public void test() {
-        Teacher teacher = new Teacher();
-        teacher.setCareer("niubi");
-        teacher.setName("clt");
-        teacherService.save(teacher);
+        courseMapper.getCourseInfoById("1487075970371407873");
+
     }
 }

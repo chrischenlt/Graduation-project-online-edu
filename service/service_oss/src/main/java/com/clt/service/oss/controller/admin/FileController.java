@@ -42,7 +42,7 @@ public class FileController {
             inputStream = file.getInputStream();
             String originalFilename = file.getOriginalFilename();
             String uploadUrl = fileService.upload(inputStream, module, originalFilename);
-
+            log.info("文件上传成功 file: {}, module: {}", file, module);
             return R.ok().message("文件上传成功").data("url", uploadUrl);
         } catch (Exception e) {
             log.error(ExceptionUtils.getMessage(e));

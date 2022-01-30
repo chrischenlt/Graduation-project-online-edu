@@ -2,6 +2,7 @@ package com.clt.service.edu.mapper;
 
 import com.clt.service.edu.entity.CourseCollect;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author chenlt
  * @since 2022-01-06
  */
+@Repository
 public interface CourseCollectMapper extends BaseMapper<CourseCollect> {
 
 }

@@ -2,8 +2,10 @@ package com.clt.service.edu;
 
 import com.clt.service.edu.entity.Course;
 import com.clt.service.edu.entity.Teacher;
+import com.clt.service.edu.entity.Video;
 import com.clt.service.edu.entity.form.CourseInfoForm;
 import com.clt.service.edu.mapper.CourseMapper;
+import com.clt.service.edu.mapper.VideoMapper;
 import com.clt.service.edu.service.TeacherService;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RBatch;
@@ -27,11 +29,10 @@ public class test {
     @Resource
     private RedisTemplate redisTemplate;
     @Resource
-    private CourseMapper courseMapper;
+    private VideoMapper videoMapper;
 
     @Test
     public void test() {
-        courseMapper.getCourseInfoById("1487075970371407873");
 
     }
 }

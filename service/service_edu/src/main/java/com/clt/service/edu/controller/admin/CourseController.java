@@ -8,6 +8,7 @@ import com.clt.service.edu.entity.vo.CoursePublishVo;
 import com.clt.service.edu.entity.vo.CourseQueryVo;
 import com.clt.service.edu.entity.vo.CourseVo;
 import com.clt.service.edu.service.CourseService;
+import com.clt.service.edu.service.VideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,6 +38,8 @@ public class CourseController {
 
     @Resource
     private CourseService courseService;
+    @Autowired
+    private VideoService videoService;
 
     @ApiOperation("新增课程")
     @PostMapping("save-course-info")
@@ -96,10 +99,15 @@ public class CourseController {
     @DeleteMapping("remove/{id}")
     public R removeById(@ApiParam(value = "课程Id" ,required = true) @PathVariable String id) {
 
+        //删除课程视频
+        videoService.removeMediaVideoByCourseId(id);
+
+        //删除课程封面
         if (!courseService.removeCoverById(id)) {
             log.error("oss课程封面图片删除失败, id : {}", id);
         }
 
+        //删除课程
         if (courseService.removeCourseById(id)) {
             return R.ok().message("删除成功");
         }

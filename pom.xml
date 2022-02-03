@@ -10,6 +10,7 @@
         <module>service</module>
         <module>service/service_edu</module>
         <module>service/service_oss</module>
+        <module>service/service_vod</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -167,11 +168,11 @@
                 <artifactId>aliyun-java-sdk-vod</artifactId>
                 <version>${aliyun-java-sdk-vod.version}</version>
             </dependency>
-            <!--<dependency>-->
-            <!--<groupId>com.aliyun</groupId>-->
-            <!--<artifactId>aliyun-sdk-vod-upload</artifactId>-->
-            <!--<version>${aliyun-sdk-vod-upload.version}</version>-->
-            <!--</dependency>-->
+            <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-sdk-vod-upload</artifactId>
+            <version>${aliyun-sdk-vod-upload.version}</version>
+            </dependency>
 
             <!--json-->
             <dependency>

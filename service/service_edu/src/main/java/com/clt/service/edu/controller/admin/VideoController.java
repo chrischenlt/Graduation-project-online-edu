@@ -3,6 +3,7 @@ package com.clt.service.edu.controller.admin;
 
 import com.clt.common.base.result.R;
 import com.clt.service.edu.entity.Video;
+import com.clt.service.edu.feign.VodMediaService;
 import com.clt.service.edu.service.VideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 /**
@@ -27,6 +29,7 @@ import java.util.Objects;
 @RequestMapping("/admin/edu/video")
 @Slf4j
 public class VideoController {
+
     @Autowired
     private VideoService videoService;
 
@@ -72,8 +75,8 @@ public class VideoController {
             @ApiParam(value = "课时ID", required = true)
             @PathVariable String id) {
 
-        //TODO 删除视频：VOD
-        //在此处调用vod中的删除视频文件的接口
+        // 删除视频
+        videoService.removeMediaVideoById(id);
 
         if (videoService.removeById(id)) {
             return R.ok().message("删除成功");

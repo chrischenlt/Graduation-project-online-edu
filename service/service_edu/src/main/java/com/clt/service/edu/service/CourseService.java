@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.clt.service.edu.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.clt.service.edu.entity.form.CourseInfoForm;
-import com.clt.service.edu.entity.vo.CoursePublishVo;
-import com.clt.service.edu.entity.vo.CourseQueryVo;
-import com.clt.service.edu.entity.vo.CourseVo;
+import com.clt.service.edu.entity.vo.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -33,4 +33,8 @@ public interface CourseService extends IService<Course> {
     CoursePublishVo getCoursePublishVoById(String id);
 
     boolean publishCourseById(String id);
+
+    List<Course> webSelectList(WebCourseQueryVo webCourseQueryVo);
+
+    WebCourseVo selectWebCourseVoById(String id);
 }

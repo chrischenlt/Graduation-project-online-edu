@@ -1,21 +1,22 @@
-package com.clt.service.oss;
+package com.clt.service.cms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @Author 陈力天
- * @Date 2022/1/15
+ * @Date 2022/2/4
  */
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@SpringBootApplication
 @ComponentScan({"com.clt"})
+@EnableFeignClients
 @EnableDiscoveryClient
-public class ServiceOssApplication {
+public class ServiceCmsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServiceOssApplication.class, args);
+        SpringApplication.run(ServiceCmsApplication.class, args);
     }
 }

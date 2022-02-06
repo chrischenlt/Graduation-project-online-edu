@@ -1,4 +1,4 @@
-package com.clt.service.oss.utils;
+package com.clt.service.sms.utils;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,17 +1,16 @@
-package com.clt.service.oss.service.impl;
+package com.clt.service.sms.service.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.CannedAccessControlList;
-import com.clt.service.oss.service.FileService;
-import com.clt.service.oss.utils.OssProperties;
+import com.clt.service.sms.service.FileService;
+import com.clt.service.sms.utils.OssProperties;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.UUID;
 
 /**

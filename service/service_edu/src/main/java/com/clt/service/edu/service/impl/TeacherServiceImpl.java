@@ -15,6 +15,7 @@ import com.clt.service.edu.mapper.TeacherMapper;
 import com.clt.service.edu.service.TeacherService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -105,5 +106,16 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         map.put("teacher", teacher);
         map.put("courseList", courseList);
         return map;
+    }
+
+    @Cacheable(value = "index", key = "'selectHotTeacher'")
+    @Override
+    public List<Teacher> selectHotTeacher() {
+
+        QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("sort");
+        queryWrapper.last("limit 4");
+
+        return baseMapper.selectList(queryWrapper);
     }
 }

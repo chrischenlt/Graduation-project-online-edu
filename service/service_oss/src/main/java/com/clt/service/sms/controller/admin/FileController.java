@@ -1,10 +1,10 @@
-package com.clt.service.oss.controller.admin;
+package com.clt.service.sms.controller.admin;
 
 import com.clt.common.base.result.R;
 import com.clt.common.base.result.ResultCodeEnum;
 import com.clt.common.base.util.ExceptionUtils;
 import com.clt.service.base.exception.MyException;
-import com.clt.service.oss.service.FileService;
+import com.clt.service.sms.service.FileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**

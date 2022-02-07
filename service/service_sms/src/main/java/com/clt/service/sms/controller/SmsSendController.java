@@ -43,7 +43,7 @@ public class SmsSendController {
 
         redisTemplate.opsForValue().set(mobile, code, 5, TimeUnit.MINUTES);
 
-        smsService.sendSms(mobile,code);
+//        smsService.sendSms(mobile,code);
 
         return R.ok().message("短信发送成功");
     }

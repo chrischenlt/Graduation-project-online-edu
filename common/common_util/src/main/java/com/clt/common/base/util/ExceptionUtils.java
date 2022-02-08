@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * @author helen
- * @since 2019/9/25
- */
 public class ExceptionUtils {
 
     public static String getMessage(Exception e) {

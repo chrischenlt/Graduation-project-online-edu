@@ -13,10 +13,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
 
-/**
- * @author helen
- * @since 2019/10/16
- */
 public class JwtUtils {
 
     public static final String APP_SECRET = "ukc8BDbRigUDaY6pZFfWus2jZWLPHO";

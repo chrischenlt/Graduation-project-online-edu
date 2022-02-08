@@ -7,10 +7,6 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author helen
- * @since 2019/12/25
- */
 @Data
 @ApiModel(value = "全局统一返回结果")
 public class R {

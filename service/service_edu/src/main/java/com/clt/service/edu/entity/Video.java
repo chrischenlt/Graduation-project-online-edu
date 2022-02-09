@@ -22,10 +22,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("edu_video")
-@ApiModel(value="Video对象", description="课程视频")
+@ApiModel(value = "Video对象", description = "课程视频")
 public class Video extends BaseEntity {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "课程ID")
     private String courseId;
@@ -49,7 +49,7 @@ public class Video extends BaseEntity {
     private Long playCount;
 
     @ApiModelProperty(value = "是否可以试听：0收费 1免费")
-    private Boolean Free;
+    private Boolean free;
 
     @ApiModelProperty(value = "视频时长（秒）")
     private Float duration;

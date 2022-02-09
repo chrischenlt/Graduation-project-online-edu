@@ -12,8 +12,8 @@ public enum TeacherEnum {
     LEVEL("level", "头衔 1高级讲师 2首席讲师"),
     AVATAR("avatar", "讲师头像"),
     SORT("sort", "排序"),
-    JOIN_DATE("joinDate", "入驻时间"),
-    IS_DELETED("isDeleted", "逻辑删除 1（true）已删除， 0（false）未删除"),
+    JOIN_DATE("join_date", "入驻时间"),
+    IS_DELETED("is_deleted", "逻辑删除 1（true）已删除， 0（false）未删除"),
     ;
 
 

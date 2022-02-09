@@ -3,11 +3,13 @@ package com.clt.service.edu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.result.R;
 import com.clt.service.base.dto.CourseDto;
 import com.clt.service.edu.entity.*;
 import com.clt.service.edu.entity.form.CourseInfoForm;
 import com.clt.service.edu.entity.vo.*;
+import com.clt.service.edu.enums.*;
 import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.mapper.*;
 import com.clt.service.edu.service.CourseService;
@@ -136,22 +138,22 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public boolean removeCourseById(String id) {
         //根据courseId删除Video(课时)
         QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
-        videoQueryWrapper.eq("course_id", id);
+        videoQueryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), id);
         videoMapper.delete(videoQueryWrapper);
 
         //根据courseId删除Chapter(章节)
         QueryWrapper<Chapter> chapterQueryWrapper = new QueryWrapper<>();
-        chapterQueryWrapper.eq("course_id", id);
+        chapterQueryWrapper.eq(ChapterEnum.COURSE_ID.getColumn(), id);
         chapterMapper.delete(chapterQueryWrapper);
 
         //根据courseId删除Comment(评论)
         QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
-        commentQueryWrapper.eq("course_id", id);
+        commentQueryWrapper.eq(CommentEnum.COURSE_ID.getColumn(), id);
         commentMapper.delete(commentQueryWrapper);
 
         //根据courseId删除CourseCollect(课程收藏)
         QueryWrapper<CourseCollect> courseCollectQueryWrapper = new QueryWrapper<>();
-        courseCollectQueryWrapper.eq("course_id", id);
+        courseCollectQueryWrapper.eq(CourseCollectEnum.COURSE_ID.getColumn(), id);
         courseCollectMapper.delete(courseCollectQueryWrapper);
 
         //根据courseId删除CourseDescription(课程详情)
@@ -182,29 +184,29 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
 
         //查询已发布的课程
-        queryWrapper.eq("status", Course.COURSE_NORMAL);
+        queryWrapper.eq(CourseEnum.STATUS.getColumn(), Course.COURSE_NORMAL);
 
         if(!StringUtils.isEmpty(webCourseQueryVo.getSubjectParentId())){
-            queryWrapper.eq("subject_parent_id", webCourseQueryVo.getSubjectParentId());
+            queryWrapper.eq(CourseEnum.SUBJECT_PARENT_ID.getColumn(), webCourseQueryVo.getSubjectParentId());
         }
 
         if (!StringUtils.isEmpty(webCourseQueryVo.getSubjectId())) {
-            queryWrapper.eq("subject_id", webCourseQueryVo.getSubjectId());
+            queryWrapper.eq(CourseEnum.SUBJECT_ID.getColumn(), webCourseQueryVo.getSubjectId());
         }
 
         if (!StringUtils.isEmpty(webCourseQueryVo.getBuyCountSort())) {
-            queryWrapper.orderByDesc("buy_count");
+            queryWrapper.orderByDesc(CourseEnum.BUY_COUNT.getColumn());
         }
 
         if (!StringUtils.isEmpty(webCourseQueryVo.getGmtCreateSort())) {
-            queryWrapper.orderByDesc("gmt_create");
+            queryWrapper.orderByDesc(BaseEnum.GMT_CREATE.getColumn());
         }
 
         if (!StringUtils.isEmpty(webCourseQueryVo.getPriceSort())) {
             if(webCourseQueryVo.getType() == null || webCourseQueryVo.getType() == 1){
-                queryWrapper.orderByAsc("price");
+                queryWrapper.orderByAsc(CourseEnum.PRICE.getColumn());
             }else{
-                queryWrapper.orderByDesc("price");
+                queryWrapper.orderByDesc(CourseEnum.PRICE.getColumn());
             }
         }
 
@@ -228,7 +230,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public List<Course> selectHotCourse() {
 
         QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
-        courseQueryWrapper.orderByDesc("view_count");
+        courseQueryWrapper.orderByDesc(CourseEnum.VIEW_COUNT.getColumn());
         courseQueryWrapper.last("limit 8");
 
         return baseMapper.selectList(courseQueryWrapper);

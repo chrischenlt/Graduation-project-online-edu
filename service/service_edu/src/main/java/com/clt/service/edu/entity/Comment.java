@@ -27,10 +27,10 @@ public class Comment extends BaseEntity {
 
     private static final long serialVersionUID=1L;
 
-    @ApiModelProperty(value = "课程id")
+    @ApiModelProperty(value = "课程ID")
     private String courseId;
 
-    @ApiModelProperty(value = "讲师id")
+    @ApiModelProperty(value = "讲师ID")
     private String teacherId;
 
     @ApiModelProperty(value = "会员id")

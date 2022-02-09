@@ -1,6 +1,7 @@
 package com.clt.service.edu.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.clt.service.base.dto.CourseDto;
 import com.clt.service.edu.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.clt.service.edu.entity.form.CourseInfoForm;
@@ -40,4 +41,5 @@ public interface CourseService extends IService<Course> {
 
     List<Course> selectHotCourse();
 
+    CourseDto getCourseDtoById(String courseId);
 }

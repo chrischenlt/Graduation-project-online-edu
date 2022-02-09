@@ -2,6 +2,7 @@ package com.clt.service.edu.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.clt.service.base.dto.CourseDto;
 import com.clt.service.edu.entity.Course;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -37,4 +38,6 @@ public interface CourseMapper extends BaseMapper<Course> {
     CoursePublishVo selectCoursePublishVoById(String id);
 
     WebCourseVo selectWebCourseVoById(String courseId);
+
+    CourseDto selectCourseDtoById(String courseId);
 }

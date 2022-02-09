@@ -1,4 +1,4 @@
-package com.clt.service.util;
+package com.clt.service.ucenter.util;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

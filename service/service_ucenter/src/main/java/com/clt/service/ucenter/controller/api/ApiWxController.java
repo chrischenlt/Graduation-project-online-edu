@@ -9,7 +9,7 @@ import com.clt.common.base.util.JwtUtils;
 import com.clt.service.base.exception.MyException;
 import com.clt.service.ucenter.entity.Member;
 import com.clt.service.ucenter.service.MemberService;
-import com.clt.service.util.UcenterProperties;
+import com.clt.service.ucenter.util.UcenterProperties;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

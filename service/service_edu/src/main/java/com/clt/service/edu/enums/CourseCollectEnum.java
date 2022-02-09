@@ -4,18 +4,16 @@ package com.clt.service.edu.enums;
  * @Author 陈力天
  * @Date 2022/2/9
  */
-public enum ChapterEnum {
+public enum CourseCollectEnum {
 
     COURSE_ID("course_id", "课程ID"),
-    TITLE("title","章节名称"),
-    SORT("sort","排序字段"),
+    MEMBER_ID("member_id", "会员id"),
     ;
-
 
     private final String column;
     private final String label;
 
-    ChapterEnum(String column, String label) {
+    CourseCollectEnum(String column, String label) {
         this.column = column;
         this.label = label;
     }

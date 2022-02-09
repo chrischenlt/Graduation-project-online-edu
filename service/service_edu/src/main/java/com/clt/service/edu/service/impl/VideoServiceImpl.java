@@ -2,6 +2,7 @@ package com.clt.service.edu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.clt.service.edu.entity.Video;
+import com.clt.service.edu.enums.VideoEnum;
 import com.clt.service.edu.feign.VodMediaService;
 import com.clt.service.edu.mapper.VideoMapper;
 import com.clt.service.edu.service.VideoService;
@@ -40,12 +41,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     @Override
     public void removeMediaVideoByChapterId(String chapterId) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("video_source_id");
-        queryWrapper.eq("chapter_id", chapterId);
+        queryWrapper.select(VideoEnum.VIDEO_SOURCE_ID.getColumn());
+        queryWrapper.eq(VideoEnum.CHAPTER_ID.getColumn() , chapterId);
 
         List<Map<String, Object>> maps = baseMapper.selectMaps(queryWrapper);
         List<String> videoSourceIdList = maps.stream().map(data -> {
-            return (String) data.get("video_source_id");
+            return (String) data.get(VideoEnum.VIDEO_SOURCE_ID.getColumn());
         }).collect(Collectors.toList());
 
         vodMediaService.removeVideoByIdList(videoSourceIdList);
@@ -55,12 +56,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     @Override
     public void removeMediaVideoByCourseId(String courseId) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("video_source_id");
-        queryWrapper.eq("course_id", courseId);
+        queryWrapper.select(VideoEnum.VIDEO_SOURCE_ID.getColumn());
+        queryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), courseId);
 
         List<Map<String, Object>> maps = baseMapper.selectMaps(queryWrapper);
         List<String> videoSourceIdList = maps.stream().map(data -> {
-            return (String) data.get("video_source_id");
+            return (String) data.get(VideoEnum.VIDEO_SOURCE_ID.getColumn());
         }).collect(Collectors.toList());
 
         vodMediaService.removeVideoByIdList(videoSourceIdList);

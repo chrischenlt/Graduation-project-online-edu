@@ -8,6 +8,7 @@ import com.clt.common.base.result.R;
 import com.clt.service.edu.entity.Course;
 import com.clt.service.edu.entity.Teacher;
 import com.clt.service.edu.entity.vo.TeacherQueryVo;
+import com.clt.service.edu.enums.CourseEnum;
 import com.clt.service.edu.enums.TeacherEnum;
 import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.mapper.CourseMapper;
@@ -72,8 +73,8 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public List<Map<String, Object>> selectNameList(String key) {
 
         QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("name");
-        queryWrapper.likeRight("name", key);
+        queryWrapper.select(TeacherEnum.NAME.getColumn());
+        queryWrapper.likeRight(TeacherEnum.NAME.getColumn(), key);
 
         return baseMapper.selectMaps(queryWrapper);
     }
@@ -99,7 +100,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 
         Teacher teacher = baseMapper.selectById(id);
         QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
-        courseQueryWrapper.eq("teacher_id", id);
+        courseQueryWrapper.eq(CourseEnum.TEACHER_ID.getColumn(), id);
         List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
 
         Map<String, Object> map = new HashMap<>();

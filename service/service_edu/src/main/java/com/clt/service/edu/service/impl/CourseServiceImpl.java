@@ -7,6 +7,8 @@ import com.clt.common.base.result.R;
 import com.clt.service.edu.entity.*;
 import com.clt.service.edu.entity.form.CourseInfoForm;
 import com.clt.service.edu.entity.vo.*;
+import com.clt.service.edu.enums.ChapterEnum;
+import com.clt.service.edu.enums.VideoEnum;
 import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.mapper.*;
 import com.clt.service.edu.service.CourseService;
@@ -135,12 +137,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public boolean removeCourseById(String id) {
         //根据courseId删除Video(课时)
         QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
-        videoQueryWrapper.eq("course_id", id);
+        videoQueryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), id);
         videoMapper.delete(videoQueryWrapper);
 
         //根据courseId删除Chapter(章节)
         QueryWrapper<Chapter> chapterQueryWrapper = new QueryWrapper<>();
-        chapterQueryWrapper.eq("course_id", id);
+        chapterQueryWrapper.eq(ChapterEnum.COURSE_ID.getColumn(), id);
         chapterMapper.delete(chapterQueryWrapper);
 
         //根据courseId删除Comment(评论)

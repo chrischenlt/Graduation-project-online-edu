@@ -30,9 +30,16 @@ public class test {
     private RedisTemplate redisTemplate;
     @Resource
     private VideoMapper videoMapper;
+    @Resource
+    private CourseMapper courseMapper;
 
     @Test
     public void test() {
+
+        Course course = new Course();
+        course.setId("1487324603557613569");
+        course.setViewCount(2L);
+        courseMapper.updateById(course);
 
     }
 }

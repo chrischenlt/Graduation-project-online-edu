@@ -14,9 +14,11 @@ import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.mapper.*;
 import com.clt.service.edu.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.NonNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -48,6 +50,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private CommentMapper commentMapper;
     @Autowired
     private CourseCollectMapper courseCollectMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public String saveCourseInfo(CourseInfoForm courseInfoForm) {
@@ -216,13 +220,28 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Transactional(rollbackFor = Exception.class)
     @Override
     public WebCourseVo selectWebCourseVoById(String id) {
-        Course course = baseMapper.selectById(id);
+        if (StringUtils.isEmpty(id)) {
+            return null;
+        }
+
+        WebCourseVo webCourseVo = baseMapper.selectWebCourseVoById(id);
+
+        if (Objects.isNull(webCourseVo)) {
+            return null;
+        }
         //更新浏览数
-        course.setViewCount(course.getViewCount() + 1);
-        // todo
-        baseMapper.updateById(course);
+        String key = "Course_View_Count:" + id;
+        Long viewCount = redisTemplate.opsForValue().increment(key);
+        webCourseVo.setViewCount(viewCount);
+        if (viewCount % 100 == 0) {
+            Course course = new Course();
+            course.setId(id);
+            course.setViewCount(viewCount);
+            baseMapper.updateById(course);
+        }
+
         //获取课程信息
-        return baseMapper.selectWebCourseVoById(id);
+        return webCourseVo;
     }
 
     @Cacheable(value = "index", key = "'selectHotCourse'")

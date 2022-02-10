@@ -3,9 +3,11 @@ package com.clt.service.cms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.result.R;
 import com.clt.service.cms.entity.Ad;
 import com.clt.service.cms.entity.vo.AdVo;
+import com.clt.service.cms.enums.AdEnum;
 import com.clt.service.cms.feign.OssFileService;
 import com.clt.service.cms.mapper.AdMapper;
 import com.clt.service.cms.service.AdService;
@@ -63,8 +65,8 @@ public class AdServiceImpl extends ServiceImpl<AdMapper, Ad> implements AdServic
     public List<Ad> selectByAdTypeId(String adTypeId) {
 
         QueryWrapper<Ad> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByAsc("sort", "id");
-        queryWrapper.eq("type_id", adTypeId);
+        queryWrapper.orderByAsc(AdEnum.SORT.getColumn(), BaseEnum.ID.getColumn());
+        queryWrapper.eq(AdEnum.TYPE_ID.getColumn(), adTypeId);
 
         return baseMapper.selectList(queryWrapper);
     }

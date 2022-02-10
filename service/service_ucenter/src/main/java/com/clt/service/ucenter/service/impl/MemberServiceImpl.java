@@ -11,6 +11,7 @@ import com.clt.service.base.exception.MyException;
 import com.clt.service.ucenter.entity.Member;
 import com.clt.service.ucenter.entity.vo.LoginVo;
 import com.clt.service.ucenter.entity.vo.RegisterVo;
+import com.clt.service.ucenter.enums.MemberEnum;
 import com.clt.service.ucenter.mapper.MemberMapper;
 import com.clt.service.ucenter.service.MemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,7 +63,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
         //用户是否注册：mysql
         QueryWrapper<Member> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("mobile", mobile);
+        queryWrapper.eq(MemberEnum.MOBILE.getColumn(), mobile);
         Integer count = baseMapper.selectCount(queryWrapper);
         if(count > 0){
             throw new MyException(ResultCodeEnum.REGISTER_MOBLE_ERROR);
@@ -73,8 +74,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setNickname(nickname);
         member.setMobile(mobile);
         member.setPassword(MD5.encrypt(password));
-        member.setAvatar("https://guli-file-191125.oss-cn-beijing.aliyuncs.com/avatar/default.jpg");
-        member.setDisabled(false);
+        member.setAvatar("");
+        member.setIsDisabled(false);
         baseMapper.insert(member);
     }
 
@@ -93,7 +94,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
         //校验手机号是否存在
         QueryWrapper<Member> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("mobile", mobile);
+        queryWrapper.eq(MemberEnum.MOBILE.getColumn(), mobile);
         Member member = baseMapper.selectOne(queryWrapper);
         if(member == null){
             throw new MyException(ResultCodeEnum.LOGIN_MOBILE_ERROR);
@@ -105,7 +106,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
 
         //校验用户是否被禁用
-        if(member.getDisabled()){
+        if(member.getIsDisabled()){
             throw new MyException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
         }
 
@@ -124,7 +125,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     public Member getByOpenid(String openid) {
 
         QueryWrapper<Member> memberQueryWrapper = new QueryWrapper<>();
-        memberQueryWrapper.eq("openid", openid);
+        memberQueryWrapper.eq(MemberEnum.OPENID.getColumn(), openid);
         return baseMapper.selectOne(memberQueryWrapper);
     }
 

@@ -74,7 +74,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setNickname(nickname);
         member.setMobile(mobile);
         member.setPassword(MD5.encrypt(password));
-        member.setAvatar("");
+        member.setAvatar("https://thirdwx.qlogo.cn/mmopen/vi_32/FBickBicLQIrov5BT9jNUYBnPzMNibIkmfcOczxySDYn8psZQ9fgoLF6V9zuonicvaG6AEYPFfSefW7Tc8uB1ykWzQ/132");
         member.setIsDisabled(false);
         baseMapper.insert(member);
     }

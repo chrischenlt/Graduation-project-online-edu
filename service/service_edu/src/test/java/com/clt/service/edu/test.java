@@ -44,7 +44,7 @@ public class test {
         DefaultMQProducer producer = new DefaultMQProducer("pg");
         producer.setNamesrvAddr("192.168.111.101:9876");
         producer.start();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             byte[] body = ("Hi," + i).getBytes();
             try {
                 Message message = new Message("myTopic", "myTag", body);

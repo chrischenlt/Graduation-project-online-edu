@@ -99,8 +99,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq(OrderEnum.MEMBER_ID.getColumn(), memberId)
                 .eq(OrderEnum.STATUS.getColumn(), 1);
 
-        Integer count = baseMapper.selectCount(queryWrapper);
-        return count.intValue() > 0;
+        return baseMapper.selectCount(queryWrapper) > 0;
     }
 
 }

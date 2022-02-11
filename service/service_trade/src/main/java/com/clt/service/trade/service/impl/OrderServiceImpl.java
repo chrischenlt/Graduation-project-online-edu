@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -100,6 +101,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq(OrderEnum.STATUS.getColumn(), 1);
 
         return baseMapper.selectCount(queryWrapper) > 0;
+    }
+
+    @Override
+    public List<Order> selectByMemberId(String memberId) {
+
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper
+                .orderByDesc(BaseEnum.GMT_CREATE.getColumn())
+                .eq(OrderEnum.MEMBER_ID.getColumn(), memberId);
+        return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public boolean removeById(String orderId, String memberId) {
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper
+                .eq(BaseEnum.ID.getColumn(), orderId)
+                .eq(OrderEnum.MEMBER_ID.getColumn(), memberId);
+        return this.remove(queryWrapper);
     }
 
 }

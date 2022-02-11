@@ -2,7 +2,10 @@ package com.clt.service.edu.mapper;
 
 import com.clt.service.edu.entity.CourseCollect;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.clt.service.edu.entity.vo.CourseCollectVo;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +18,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseCollectMapper extends BaseMapper<CourseCollect> {
 
+    List<CourseCollectVo> selectPageByMemberId(String memberId);
 }

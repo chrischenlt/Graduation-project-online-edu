@@ -86,7 +86,7 @@ public class CodeGenerator {
         mpg.setStrategy(strategy);
 
         //设置BaseEntity
-        strategy.setSuperEntityClass("com.atguigu.guli.service.base.model.BaseEntity");
+        strategy.setSuperEntityClass("com.clt.service.base.model.BaseEntity");
         // 填写BaseEntity中的公共字段
         strategy.setSuperEntityColumns("id", "gmt_create", "gmt_modified");
 

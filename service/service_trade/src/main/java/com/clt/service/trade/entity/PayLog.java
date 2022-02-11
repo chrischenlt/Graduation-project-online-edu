@@ -2,7 +2,7 @@ package com.clt.service.trade.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.atguigu.guli.service.base.model.BaseEntity;
+import com.clt.service.base.model.BaseEntity;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;

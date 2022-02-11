@@ -2,9 +2,6 @@ package com.clt.service.trade.entity;
 
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.atguigu.guli.service.base.model.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.clt.service.base.model.BaseEntity;
 import io.swagger.annotations.ApiModel;

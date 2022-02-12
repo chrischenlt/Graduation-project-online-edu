@@ -24,4 +24,6 @@ public interface OrderService extends IService<Order> {
     List<Order> selectByMemberId(String id);
 
     boolean removeById(String orderId, String memberId);
+
+    Order getOrderByOrderNo(String orderNo);
 }

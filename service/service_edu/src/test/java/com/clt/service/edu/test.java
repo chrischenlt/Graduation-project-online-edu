@@ -7,11 +7,17 @@ import com.clt.service.edu.entity.form.CourseInfoForm;
 import com.clt.service.edu.mapper.CourseMapper;
 import com.clt.service.edu.mapper.VideoMapper;
 import com.clt.service.edu.service.TeacherService;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RBatch;
 import org.redisson.api.RBucket;
@@ -20,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,6 +73,31 @@ public class test {
         }
         TimeUnit.SECONDS.sleep(3);
         producer.shutdown();
+
+    }
+
+    @Test
+    public void rocketmqConsumer() throws Exception{
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("cg");
+        consumer.setNamesrvAddr("192.168.111.101:9876");
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        consumer.subscribe("myTopic","*");
+        consumer.registerMessageListener(new MessageListenerConcurrently() {
+            @Override
+            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+                for (MessageExt msg : list){
+                    System.out.println(msg);
+                }
+                System.out.println(consumeConcurrentlyContext);
+                System.out.println(111);
+                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+            }
+
+        });
+
+        consumer.start();
+        System.out.println("Consumer Started");
+        TimeUnit.SECONDS.sleep(15);
 
     }
 }

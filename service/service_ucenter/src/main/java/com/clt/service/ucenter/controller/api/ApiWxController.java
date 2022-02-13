@@ -30,7 +30,7 @@ import java.util.UUID;
  * @Author 陈力天
  * @Date 2022/2/7
  */
-@CrossOrigin
+
 @Controller//注意这里没有配置 @RestController
 @RequestMapping("/api/ucenter/wx")
 @Slf4j

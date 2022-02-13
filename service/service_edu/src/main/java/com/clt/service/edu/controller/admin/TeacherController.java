@@ -25,7 +25,7 @@ import java.util.Objects;
  * @author chenlt
  * @since 2022-01-06
  */
-@CrossOrigin //允许跨域
+ //允许跨域
 @Api("讲师管理")
 @RestController
 @RequestMapping("/admin/edu/teacher")

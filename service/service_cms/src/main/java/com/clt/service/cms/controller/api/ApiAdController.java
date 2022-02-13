@@ -16,7 +16,7 @@ import java.util.List;
  * @Author 陈力天
  * @Date 2022/2/4
  */
-@CrossOrigin
+
 @Api(description = "广告推荐")
 @RestController
 @RequestMapping("/api/cms/ad")

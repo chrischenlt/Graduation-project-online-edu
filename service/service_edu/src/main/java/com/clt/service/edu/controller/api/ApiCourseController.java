@@ -20,7 +20,7 @@ import java.util.List;
  * @Author 陈力天
  * @Date 2022/2/3
  */
-@CrossOrigin
+
 @Api(description="课程")
 @RestController
 @RequestMapping("/api/edu/course")

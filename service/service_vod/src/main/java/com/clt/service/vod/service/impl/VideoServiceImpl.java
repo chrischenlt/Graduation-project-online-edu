@@ -9,11 +9,13 @@ import com.aliyuncs.vod.model.v20170321.DeleteVideoRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.clt.common.base.result.ResultCodeEnum;
+import com.clt.common.base.util.RocketMQUtils;
 import com.clt.service.base.exception.MyException;
 import com.clt.service.vod.service.VideoService;
 import com.clt.service.vod.util.AliyunVodSDKUtils;
 import com.clt.service.vod.util.VodProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.support.RocketMQUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,6 +30,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class VideoServiceImpl implements VideoService {
+
+    private final String TOPIC = "DeleteVODTopic";
 
     @Autowired
     private VodProperties vodProperties;
@@ -69,15 +73,9 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public void removeVideoByIdList(List<String> videoIdList) throws ClientException {
-        DefaultAcsClient client = AliyunVodSDKUtils.initVodClient(
-                vodProperties.getKeyid(),
-                vodProperties.getKeysecret());
+    public void removeVideoByIdList(List<String> videoIdList) {
 
-        // TODO 使用mq解耦
-
-        DeleteVideoRequest request = new DeleteVideoRequest();
-
+        // 使用mq解耦
         int size = videoIdList.size();//id列表的长度
         StringBuffer idListStr = new StringBuffer(); //组装好的字符串
         for (int i = 0; i < size; i++) {
@@ -87,8 +85,7 @@ public class VideoServiceImpl implements VideoService {
                 //删除
                 //支持传入多个视频ID，多个用逗号分隔。id不能超过20个
 //                log.info("idListStr = " + idListStr.toString());
-                request.setVideoIds(idListStr.toString());
-                client.getAcsResponse(request);
+                RocketMQUtils.asyncPush(TOPIC, idListStr.toString());
                 //重置idListStr
                 idListStr = new StringBuffer();
             }else if(i % 20 < 19){

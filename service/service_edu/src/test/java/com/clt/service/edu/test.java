@@ -1,5 +1,6 @@
 package com.clt.service.edu;
 
+import com.clt.common.base.util.RocketMQUtils;
 import com.clt.service.edu.entity.Course;
 import com.clt.service.edu.entity.Teacher;
 import com.clt.service.edu.entity.Video;
@@ -48,44 +49,24 @@ public class test {
 
     @Test
     public void test() throws Exception {
-        DefaultMQProducer producer = new DefaultMQProducer("pg");
-        producer.setNamesrvAddr("192.168.111.101:9876");
-        producer.start();
         for (int i = 0; i < 10; i++) {
             byte[] body = ("Hi," + i).getBytes();
-            try {
-                Message message = new Message("myTopic", "myTag", body);
-                producer.send(message, new SendCallback() {
-                    @Override
-                    public void onSuccess(SendResult sendResult) {
-                        System.out.println(sendResult);
-                    }
-
-                    @Override
-                    public void onException(Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                });
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
+            RocketMQUtils.asyncPush("myTopic", body);
 
         }
         TimeUnit.SECONDS.sleep(3);
-        producer.shutdown();
-
     }
 
     @Test
-    public void rocketmqConsumer() throws Exception{
+    public void rocketmqConsumer() throws Exception {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("cg");
         consumer.setNamesrvAddr("192.168.111.101:9876");
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
-        consumer.subscribe("myTopic","*");
+        consumer.subscribe("myTopic", "*");
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-                for (MessageExt msg : list){
+                for (MessageExt msg : list) {
                     System.out.println(msg);
                 }
                 System.out.println(consumeConcurrentlyContext);

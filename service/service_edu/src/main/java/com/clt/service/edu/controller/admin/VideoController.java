@@ -23,7 +23,7 @@ import java.util.Objects;
  * @author chenlt
  * @since 2022-01-06
  */
-@CrossOrigin
+
 @Api(description = "课时管理")
 @RestController
 @RequestMapping("/admin/edu/video")

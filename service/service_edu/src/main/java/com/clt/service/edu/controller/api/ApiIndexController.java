@@ -19,7 +19,7 @@ import java.util.List;
  * @Author 陈力天
  * @Date 2022/2/5
  */
-@CrossOrigin
+
 @Api(description="首页")
 @RestController
 @RequestMapping("/api/edu/index")

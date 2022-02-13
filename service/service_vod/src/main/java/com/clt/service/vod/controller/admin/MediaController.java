@@ -20,8 +20,8 @@ import java.util.List;
  * @Author 陈力天
  * @Date 2022/2/2
  */
-@Api(description="阿里云视频点播")
-@CrossOrigin //跨域
+@Api(description = "阿里云视频点播")
+
 @RestController
 @RequestMapping("/admin/vod/media")
 @Slf4j
@@ -49,8 +49,8 @@ public class MediaController {
 
     @DeleteMapping("remove/{vodId}")
     public R removeVideo(
-            @ApiParam(name="vodId", value="阿里云视频id", required = true)
-            @PathVariable String vodId){
+            @ApiParam(name = "vodId", value = "阿里云视频id", required = true)
+            @PathVariable String vodId) {
 
         log.warn("service-vod MediaController：videoSourceId= " + vodId);
         try {
@@ -66,15 +66,11 @@ public class MediaController {
     @DeleteMapping("remove")
     public R removeVideoByIdList(
             @ApiParam(value = "阿里云视频id列表", required = true)
-            @RequestBody List<String> videoIdList){
+            @RequestBody List<String> videoIdList) {
 
-        try {
-            videoService.removeVideoByIdList(videoIdList);
-            return  R.ok().message("视频删除成功");
-        } catch (Exception e) {
-            log.error(ExceptionUtils.getMessage(e));
-            throw new MyException(ResultCodeEnum.VIDEO_DELETE_ALIYUN_ERROR);
-        }
+        videoService.removeVideoByIdList(videoIdList);
+        log.info("删除阿里云视频id列表, videoIdList : {}", videoIdList);
+        return R.ok().message("视频删除成功");
     }
 
 }

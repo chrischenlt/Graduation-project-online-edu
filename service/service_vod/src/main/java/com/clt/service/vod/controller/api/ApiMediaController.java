@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @Date 2022/2/4
  */
 @Api(description="阿里云视频点播")
-@CrossOrigin //跨域
+
 @RestController
 @RequestMapping("/api/vod/media")
 @Slf4j

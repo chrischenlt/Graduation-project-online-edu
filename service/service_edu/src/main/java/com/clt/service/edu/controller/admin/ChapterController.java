@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author chenlt
  * @since 2022-01-06
  */
-@CrossOrigin
+
 @Api(description = "章节管理")
 @RestController
 @RequestMapping("/admin/edu/chapter")

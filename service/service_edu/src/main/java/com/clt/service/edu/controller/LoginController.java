@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
  * @Author 陈力天
  * @Date 2022/1/13
  */
-@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class LoginController {

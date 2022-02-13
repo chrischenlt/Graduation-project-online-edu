@@ -4,6 +4,7 @@ import com.clt.service.trade.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,4 +27,9 @@ public interface OrderService extends IService<Order> {
     boolean removeById(String orderId, String memberId);
 
     Order getOrderByOrderNo(String orderNo);
+
+    void updateOrderStatus(Map<String, String> notifyMap);
+
+    boolean queryPayStatus(String orderNo);
+
 }

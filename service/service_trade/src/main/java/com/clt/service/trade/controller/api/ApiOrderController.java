@@ -2,6 +2,7 @@ package com.clt.service.trade.controller.api;
 
 
 import com.clt.common.base.result.R;
+import com.clt.common.base.result.ResultCodeEnum;
 import com.clt.common.base.util.JwtInfo;
 import com.clt.common.base.util.JwtUtils;
 import com.clt.service.trade.entity.Order;
@@ -77,5 +78,15 @@ public class ApiOrderController {
             return R.error().message("数据不存在");
         }
     }
+
+    @GetMapping("/query-pay-status/{orderNo}")
+    public R queryPayStatus(@PathVariable String orderNo) {
+        boolean result = orderService.queryPayStatus(orderNo);
+        if (result) {//支付成功
+            return R.ok().message("支付成功");
+        }
+        return R.setResult(ResultCodeEnum.PAY_RUN);//支付中
+    }
+
 }
 

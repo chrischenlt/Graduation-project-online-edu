@@ -22,9 +22,9 @@ import java.util.List;
  * @Date 2022/2/13
  */
 @Component
-@RocketMQMessageListener(topic = "DeleteVODTopic", consumerGroup = "DeleteVODGroup")
+@RocketMQMessageListener(topic = "RemoveVODTopic", consumerGroup = "RemoveVODGroup")
 @Slf4j
-public class DeleteVideoRequestListener implements RocketMQListener<String> {
+public class RemoveVideoRequestListener implements RocketMQListener<String> {
 
     @Autowired
     private VodProperties vodProperties;

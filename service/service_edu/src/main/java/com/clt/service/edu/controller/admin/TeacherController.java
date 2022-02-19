@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.Objects;
  * @author chenlt
  * @since 2022-01-06
  */
- //允许跨域
+//允许跨域
 @Api("讲师管理")
 @RestController
 @RequestMapping("/admin/edu/teacher")
@@ -47,13 +48,12 @@ public class TeacherController {
     @DeleteMapping("remove/{id}")
     public R removeById(@ApiParam("讲师Id") @PathVariable String id) {
 
-        teacherService.removeAvatarById(id);
-
-        if (teacherService.removeById(id)) {
+        if (teacherService.removeTeacherById(id)) {
             return R.ok().message("删除成功");
         }
         return R.ok().message("删除失败");
     }
+
 
     @ApiOperation("讲师分页列表")
     @GetMapping("list/{page}/{limit}")
@@ -68,15 +68,28 @@ public class TeacherController {
         return R.ok().data("total", total).data("rows", records);
     }
 
+
     @ApiOperation("新增讲师")
     @PostMapping("save")
     public R save(@ApiParam("讲师对象") @RequestBody Teacher teacher) {
-        boolean saveSuccess = teacherService.save(teacher);
-        if (saveSuccess) {
-            return R.ok().message("保存成功");
+        //校验相关字段是否为空
+        if (StringUtils.isEmpty(teacher.getName())) {
+            return R.error().message("讲师名称为空");
         }
-        return R.error().message("保存失败");
+        if (StringUtils.isEmpty(teacher.getIntro())) {
+            return R.error().message("讲师简介不能为空");
+        }
+        if (StringUtils.isEmpty(teacher.getAvatar())) {
+            // 如果用户未上传讲师头像，给予默认头像
+            teacher.setAvatar("https://graduation-project-online-edu.oss-cn-shenzhen.aliyuncs.com/avatar/defalutAvatar/mmexport1643261832480.png");
+        }
+
+        if (teacherService.save(teacher)) {
+            return R.ok().message("数据保存成功");
+        }
+        return R.error().message("数据保存失败");
     }
+
 
     @ApiOperation("更新讲师资料")
     @PostMapping("update")

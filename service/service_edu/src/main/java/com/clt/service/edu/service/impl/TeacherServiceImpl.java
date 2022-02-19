@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.result.R;
+import com.clt.common.base.util.RocketMQUtils;
 import com.clt.service.edu.entity.Course;
 import com.clt.service.edu.entity.Teacher;
 import com.clt.service.edu.entity.vo.TeacherQueryVo;
@@ -37,10 +38,10 @@ import java.util.Objects;
 @Service
 public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> implements TeacherService {
 
-    @Resource
-    private OssFileService ossFileService;
     @Autowired
     private CourseMapper courseMapper;
+
+    private final String TOPIC = "RemoveOssAvatarTopic";
 
     @Override
     public IPage<Teacher> selectPage(Page<Teacher> pageParam, TeacherQueryVo teacherQueryVo) {
@@ -80,22 +81,6 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     }
 
     @Override
-    public boolean removeAvatarById(String id) {
-
-        //根据id获取讲师的avatar的url
-        Teacher teacher = baseMapper.selectById(id);
-        if (Objects.isNull(teacher)) {
-            return false;
-        }
-        String avatar = teacher.getAvatar();
-        if (!StringUtils.isEmpty(avatar)) {
-            R r = ossFileService.removeFile(avatar);
-            return r.getSuccess();
-        }
-        return false;
-    }
-
-    @Override
     public Map<String, Object> selectTeacherInfoById(String id) {
 
         Teacher teacher = baseMapper.selectById(id);
@@ -118,5 +103,24 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         queryWrapper.last("limit 4");
 
         return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public boolean removeTeacherById(String id) {
+        //根据id获取讲师的avatar的url
+        Teacher teacher = baseMapper.selectById(id);
+        if (Objects.isNull(teacher)) {
+            return false;
+        }
+        String avatar = teacher.getAvatar();
+        if (this.removeById(id)) {
+            if (!StringUtils.isEmpty(avatar)) {
+                // mq  删除oss上对应的头像
+                RocketMQUtils.asyncPush(TOPIC, avatar);
+
+                return true;
+            }
+        }
+        return false;
     }
 }

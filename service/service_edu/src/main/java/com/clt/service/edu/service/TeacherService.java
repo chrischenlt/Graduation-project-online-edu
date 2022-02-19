@@ -23,9 +23,9 @@ public interface TeacherService extends IService<Teacher> {
 
     List<Map<String, Object>> selectNameList(String key);
 
-    boolean removeAvatarById(String id);
-
     Map<String, Object> selectTeacherInfoById(String id);
 
     List<Teacher> selectHotTeacher();
+
+    boolean removeTeacherById(String id);
 }

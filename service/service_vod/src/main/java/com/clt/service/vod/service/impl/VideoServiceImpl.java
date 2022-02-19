@@ -31,7 +31,7 @@ import java.util.List;
 @Slf4j
 public class VideoServiceImpl implements VideoService {
 
-    private final String TOPIC = "DeleteVODTopic";
+    private final String TOPIC = "RemoveVODTopic";
 
     @Autowired
     private VodProperties vodProperties;

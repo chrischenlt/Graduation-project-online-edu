@@ -46,3 +46,6 @@ wx:
     appSecret: a7482517235173ddb4083788de60b90e
     # 微信开放平台 重定向url
     redirectUri: http://localhost:8160/api/ucenter/wx/callback
+
+rocketmq:
+  name-server: 192.168.111.101:9876

@@ -1,7 +1,7 @@
 package com.clt.service.trade.feign.fallback;
 
-import com.clt.service.base.dto.MemberDto;
-import com.clt.service.trade.feign.UcenterMemberService;
+import com.clt.service.base.dto.UserDto;
+import com.clt.service.trade.feign.UcenterUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class UcenterMemberServiceFallback implements UcenterMemberService {
+public class UcenterUserServiceFallback implements UcenterUserService {
     @Override
-    public MemberDto getMemberDtoByMemberId(String memberId) {
+    public UserDto getUserDtoByUserId(String UserId) {
         log.error("远程服务异常");
         return null;
     }

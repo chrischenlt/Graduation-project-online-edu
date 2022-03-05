@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.result.ResultCodeEnum;
 import com.clt.service.base.dto.CourseDto;
-import com.clt.service.base.dto.MemberDto;
+import com.clt.service.base.dto.UserDto;
 import com.clt.service.base.exception.MyException;
 import com.clt.service.trade.entity.Order;
 import com.clt.service.trade.entity.PayLog;
 import com.clt.service.trade.enums.OrderEnum;
 import com.clt.service.trade.feign.EduCourseService;
-import com.clt.service.trade.feign.UcenterMemberService;
+import com.clt.service.trade.feign.UcenterUserService;
 import com.clt.service.trade.mapper.OrderMapper;
 import com.clt.service.trade.mapper.PayLogMapper;
 import com.clt.service.trade.service.OrderService;
@@ -41,19 +41,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private EduCourseService eduCourseService;
 
     @Autowired
-    private UcenterMemberService ucenterMemberService;
+    private UcenterUserService ucenterUserService;
 
     @Autowired
     private PayLogMapper payLogMapper;
 
 
     @Override
-    public String saveOrder(String courseId, String memberId) {
+    public String saveOrder(String courseId, String userId) {
 
         //查询当前用户是否已有当前课程的订单
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(OrderEnum.COURSE_ID.getColumn(), courseId);
-        queryWrapper.eq(OrderEnum.MEMBER_ID.getColumn(), memberId);
+        queryWrapper.eq(OrderEnum.MEMBER_ID.getColumn(), userId);
         Order orderExist = baseMapper.selectOne(queryWrapper);
         if(orderExist != null){
             return orderExist.getId();//如果订单已存在，则直接返回订单id
@@ -66,8 +66,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         //查询用户信息
-        MemberDto memberDto = ucenterMemberService.getMemberDtoByMemberId(memberId);
-        if(memberDto == null){
+        UserDto userDto = ucenterUserService.getUserDtoByUserId(userId);
+        if(userDto == null){
             throw new MyException(ResultCodeEnum.PARAM_ERROR);
         }
 
@@ -81,9 +81,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTeacherName(courseDto.getTeacherName());
         order.setTotalFee(courseDto.getPrice().multiply(new BigDecimal(100)));//单位：分
 
-        order.setMemberId(memberId);
-        order.setMobile(memberDto.getMobile());
-        order.setNickname(memberDto.getNickname());
+        order.setMemberId(userId);
+        order.setMobile(userDto.getMobile());
+        order.setNickname(userDto.getNickname());
 
         order.setStatus(0);//未支付
         order.setPayType(1); //微信支付
@@ -160,7 +160,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         payLogMapper.insert(payLog);
 
         //更新课程销量
-        eduCourseService.updateBuyCountById(order.getCourseId());
+        eduCourseService.updateBuyCountByCourseId(order.getCourseId());
     }
 
     /**

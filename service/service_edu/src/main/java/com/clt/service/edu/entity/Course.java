@@ -65,5 +65,8 @@ public class Course extends BaseEntity {
     @ApiModelProperty(value = "课程状态 Draft未发布  Normal已发布")
     private String status;
 
+    @ApiModelProperty(value = "喜欢课程人数")
+    private Long likeCount;
+
 
 }

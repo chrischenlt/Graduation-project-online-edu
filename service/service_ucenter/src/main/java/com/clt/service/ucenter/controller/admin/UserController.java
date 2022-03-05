@@ -1,7 +1,7 @@
 package com.clt.service.ucenter.controller.admin;
 
 import com.clt.common.base.result.R;
-import com.clt.service.ucenter.service.MemberService;
+import com.clt.service.ucenter.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin/ucenter/member")
 @Slf4j
-public class MemberController {
+public class UserController {
 
     @Autowired
-    private MemberService memberService;
+    private UserService userService;
 
     @ApiOperation(value = "根据日期统计注册人数")
     @GetMapping("count-register-num/{day}")
@@ -33,7 +33,7 @@ public class MemberController {
             @PathVariable String day){
 
         // todo redis
-        Integer num = memberService.countRegisterNum(day);
+        Integer num = userService.countRegisterNum(day);
         return R.ok().data("registerNum", num);
     }
 }

@@ -27,11 +27,11 @@ public class CourseCollect extends BaseEntity {
 
     private static final long serialVersionUID=1L;
 
-    @ApiModelProperty(value = "课程讲师ID")
+    @ApiModelProperty(value = "课程ID")
     private String courseId;
 
-    @ApiModelProperty(value = "课程专业ID")
-    private String memberId;
+    @ApiModelProperty(value = "用户ID")
+    private String userId;
 
 
 }

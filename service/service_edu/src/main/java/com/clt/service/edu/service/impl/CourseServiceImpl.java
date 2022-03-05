@@ -12,6 +12,7 @@ import com.clt.service.edu.entity.vo.*;
 import com.clt.service.edu.enums.*;
 import com.clt.service.edu.feign.OssFileService;
 import com.clt.service.edu.mapper.*;
+import com.clt.service.edu.service.CourseCollectService;
 import com.clt.service.edu.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
@@ -52,6 +53,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private CourseCollectMapper courseCollectMapper;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private CourseCollectService courseCollectService;
 
     @Override
     public String saveCourseInfo(CourseInfoForm courseInfoForm) {
@@ -219,28 +222,39 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public WebCourseVo selectWebCourseVoById(String id) {
-        if (StringUtils.isEmpty(id)) {
+    public WebCourseVo selectWebCourseVoById(String courseId, String userId) {
+        if (StringUtils.isEmpty(courseId)) {
             return null;
         }
 
-        WebCourseVo webCourseVo = baseMapper.selectWebCourseVoById(id);
+        WebCourseVo webCourseVo = baseMapper.selectWebCourseVoById(courseId);
 
         if (Objects.isNull(webCourseVo)) {
             return null;
         }
         //更新浏览数
-        String key = "Course_View_Count:" + id;
+        String key = "Course_View_Count:" + courseId;
         Long viewCount = redisTemplate.opsForValue().increment(key);
         webCourseVo.setViewCount(viewCount);
         if (viewCount % 100 == 0) {
             Course course = new Course();
-            course.setId(id);
+            course.setId(courseId);
             course.setViewCount(viewCount);
             baseMapper.updateById(course);
         }
 
-        //获取课程信息
+        // 如果请求中携带token表示用户已经登录
+        if (!StringUtils.isEmpty(userId)) {
+            webCourseVo.setLike(courseCollectService.isLike(courseId, userId));
+            webCourseVo.setCollect(courseCollectService.isCollect(courseId, userId));
+        }
+
+        // 填充课程收藏和喜欢总数
+        webCourseVo.setLikeCount(courseCollectService.getCourseLikeCount(courseId));
+        webCourseVo.setCollectCount(courseCollectService.getCourseCollectCount(courseId));
+
+
+        //返回课程相关信息
         return webCourseVo;
     }
 
@@ -261,9 +275,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     @Override
-    public void updateBuyCountById(String id) {
+    public void updateBuyCountByCourseId(String courseId) {
 
-        Course course = baseMapper.selectById(id);
+        Course course = baseMapper.selectById(courseId);
         long buyCount = course.getBuyCount() + 1;
         course.setBuyCount(buyCount);
         baseMapper.updateById(course);

@@ -15,7 +15,7 @@
         from edu_course_collect cl
                  left join edu_course c on c.id = cl.course_id
                  left join edu_teacher t on t.id = c.teacher_id
-        where member_id = #{memberId}
+        where user_id = #{userId}
         order by cl.gmt_create desc
     </select>
 

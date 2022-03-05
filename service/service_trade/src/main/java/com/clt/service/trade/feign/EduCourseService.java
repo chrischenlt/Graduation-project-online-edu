@@ -19,7 +19,7 @@ public interface EduCourseService {
     @GetMapping("/api/edu/course/inner/get-course-dto/{courseId}")
     CourseDto getCourseDtoById(@PathVariable(value = "courseId") String courseId);
 
-    @GetMapping("/api/edu/course/inner/update-buy-count/{id}")
-    R updateBuyCountById(@PathVariable("id") String id);
+    @GetMapping("/api/edu/course/inner/update-buy-count/{courseId}")
+    R updateBuyCountByCourseId(@PathVariable("courseId") String courseId);
 }
 

@@ -7,15 +7,14 @@ import com.clt.common.base.util.HttpClientUtils;
 import com.clt.common.base.util.JwtInfo;
 import com.clt.common.base.util.JwtUtils;
 import com.clt.service.base.exception.MyException;
-import com.clt.service.ucenter.entity.Member;
-import com.clt.service.ucenter.service.MemberService;
+import com.clt.service.ucenter.entity.User;
+import com.clt.service.ucenter.service.UserService;
 import com.clt.service.ucenter.util.UcenterProperties;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,7 +39,7 @@ public class ApiWxController {
     private UcenterProperties ucenterProperties;
 
     @Autowired
-    private MemberService memberService;
+    private UserService userService;
 
     @GetMapping("login")
     public String genQrConnect(HttpSession session){
@@ -139,9 +138,9 @@ public class ApiWxController {
         System.out.println("openid:" + openid);
 
         //在本地数据库中查找当前微信用户的信息
-        Member member = memberService.getByOpenid(openid);
+        User user = userService.getByOpenid(openid);
 
-        if(member == null){
+        if(user == null){
             //if：如果当前用户不存在，则去微信的资源服务器获取用户个人信息（携带access_token）
             String baseUserInfoUrl = "https://api.weixin.qq.com/sns/userinfo";
             //组装参数：?access_token=ACCESS_TOKEN&openid=OPENID
@@ -175,20 +174,20 @@ public class ApiWxController {
             Double sex = (Double)resultUserInfoMap.get("sex");
 
             //在本地数据库中插入当前微信用户的信息（使用微信账号在本地服务器注册新用户）
-            member = new Member();
-            member.setOpenid(openid);
-            member.setNickname(nickname);
-            member.setAvatar(avatar);
-            member.setSex(sex.intValue());
-            memberService.save(member);
+            user = new User();
+            user.setOpenid(openid);
+            user.setNickname(nickname);
+            user.setAvatar(avatar);
+            user.setSex(sex.intValue());
+            userService.save(user);
         }
 
         //则直接使用当前用户的信息登录（生成jwt）
         //member =>Jwt
         JwtInfo jwtInfo = new JwtInfo();
-        jwtInfo.setId(member.getId());
-        jwtInfo.setNickname(member.getNickname());
-        jwtInfo.setAvatar(member.getAvatar());
+        jwtInfo.setId(user.getId());
+        jwtInfo.setNickname(user.getNickname());
+        jwtInfo.setAvatar(user.getAvatar());
         String jwtToken = JwtUtils.getJwtToken(jwtInfo, 1800);
 
         return "redirect:http://localhost:3000?token=" + jwtToken;

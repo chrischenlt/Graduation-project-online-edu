@@ -21,7 +21,7 @@ public class EduCourseServiceFallback implements EduCourseService {
     }
 
     @Override
-    public R updateBuyCountById(String id) {
+    public R updateBuyCountByCourseId(String courseId) {
         log.error("远程服务异常");
         return null;
     }

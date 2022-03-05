@@ -16,11 +16,17 @@ import java.util.List;
  */
 public interface CourseCollectService extends IService<CourseCollect> {
 
-    boolean isCollect(String courseId, String memberId);
+    boolean isCollect(String courseId, String userId);
 
-    void saveCourseCollect(String courseId, String memberId);
+    List<CourseCollectVo> selectCourseCollectListByUserId(String memberId);
 
-    List<CourseCollectVo> selectListByMemberId(String memberId);
+    void insertOrUpdateCourseLike(String courseId, String isLike, String userId);
 
-    boolean removeCourseCollect(String courseId, String memberId);
+    void insertOrUpdateCourseCollect(String courseId, String isCollect, String userId);
+
+    String getCourseLikeCount(String courseId);
+
+    String getCourseCollectCount(String courseId);
+
+    boolean isLike(String courseId, String userId);
 }

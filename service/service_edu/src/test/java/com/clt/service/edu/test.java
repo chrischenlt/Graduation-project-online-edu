@@ -7,6 +7,7 @@ import com.clt.service.edu.entity.Video;
 import com.clt.service.edu.entity.form.CourseInfoForm;
 import com.clt.service.edu.mapper.CourseMapper;
 import com.clt.service.edu.mapper.VideoMapper;
+import com.clt.service.edu.service.CourseCollectService;
 import com.clt.service.edu.service.TeacherService;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -46,15 +47,12 @@ public class test {
     private VideoMapper videoMapper;
     @Resource
     private CourseMapper courseMapper;
+    @Resource
+    private CourseCollectService courseCollectService;
 
     @Test
     public void test() throws Exception {
-        for (int i = 0; i < 10; i++) {
-            byte[] body = ("Hi," + i).getBytes();
-            RocketMQUtils.asyncPush("myTopic", body);
-
-        }
-        TimeUnit.SECONDS.sleep(3);
+        courseCollectService.insertOrUpdateCourseLike("1", "1", "1");
     }
 
     @Test

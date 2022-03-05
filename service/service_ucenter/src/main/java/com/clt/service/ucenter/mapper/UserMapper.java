@@ -1,7 +1,7 @@
 package com.clt.service.ucenter.mapper;
 
-import com.clt.service.ucenter.entity.Member;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.clt.service.ucenter.entity.User;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * @since 2022-02-06
  */
 @Repository
-public interface MemberMapper extends BaseMapper<Member> {
+public interface UserMapper extends BaseMapper<User> {
 
     Integer selectRegisterNumByDay(String day);
 }

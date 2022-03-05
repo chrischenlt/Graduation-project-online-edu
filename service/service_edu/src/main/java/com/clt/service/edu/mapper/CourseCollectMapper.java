@@ -18,5 +18,5 @@ import java.util.List;
 @Repository
 public interface CourseCollectMapper extends BaseMapper<CourseCollect> {
 
-    List<CourseCollectVo> selectPageByMemberId(String memberId);
+    List<CourseCollectVo> selectPageByMemberId(String userId);
 }

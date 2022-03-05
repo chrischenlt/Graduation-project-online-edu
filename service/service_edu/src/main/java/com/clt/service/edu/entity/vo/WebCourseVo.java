@@ -29,4 +29,10 @@ public class WebCourseVo implements Serializable {
     private String subjectLevelOne;
     private String subjectLevelTwoId;
     private String subjectLevelTwo;
+
+    private String likeCount;
+    private String collectCount;
+
+    private Boolean collect = false;
+    private Boolean like = false;
 }

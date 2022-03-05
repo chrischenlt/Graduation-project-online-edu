@@ -28,8 +28,15 @@ public class RedisConfig {
 
         RedisTemplate<String, Serializable> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
+
         redisTemplate.setKeySerializer(new StringRedisSerializer()); //key的序列化
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer()); //value序列化
+
+        // Hash的key也采用相同的序列化方式
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
 

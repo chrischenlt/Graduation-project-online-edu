@@ -19,9 +19,9 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("ucenter_member")
-@ApiModel(value="Member对象", description="会员表")
-public class Member extends BaseEntity {
+@TableName("ucenter_user")
+@ApiModel(value="User对象", description="用户表")
+public class User extends BaseEntity {
 
     private static final long serialVersionUID=1L;
 
@@ -55,6 +55,9 @@ public class Member extends BaseEntity {
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     @TableLogic
     private Boolean isDeleted;
+
+    @ApiModelProperty(value = "邮箱")
+    private String email;
 
 
 }

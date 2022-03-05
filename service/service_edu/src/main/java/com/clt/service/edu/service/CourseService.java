@@ -37,11 +37,11 @@ public interface CourseService extends IService<Course> {
 
     List<Course> webSelectList(WebCourseQueryVo webCourseQueryVo);
 
-    WebCourseVo selectWebCourseVoById(String id);
+    WebCourseVo selectWebCourseVoById(String courseId, String userId);
 
     List<Course> selectHotCourse();
 
     CourseDto getCourseDtoById(String courseId);
 
-    void updateBuyCountById(String id);
+    void updateBuyCountByCourseId(String courseId);
 }

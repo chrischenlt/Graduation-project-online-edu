@@ -6,15 +6,15 @@ import com.clt.common.base.util.FormUtils;
 import com.clt.common.base.util.JwtInfo;
 import com.clt.common.base.util.JwtUtils;
 import com.clt.common.base.util.MD5;
-import com.clt.service.base.dto.MemberDto;
+import com.clt.service.base.dto.UserDto;
 import com.clt.service.base.exception.MyException;
-import com.clt.service.ucenter.entity.Member;
+import com.clt.service.ucenter.entity.User;
 import com.clt.service.ucenter.entity.vo.LoginVo;
 import com.clt.service.ucenter.entity.vo.RegisterVo;
-import com.clt.service.ucenter.enums.MemberEnum;
-import com.clt.service.ucenter.mapper.MemberMapper;
-import com.clt.service.ucenter.service.MemberService;
+import com.clt.service.ucenter.enums.UserEnum;
+import com.clt.service.ucenter.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.clt.service.ucenter.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  * @since 2022-02-06
  */
 @Service
-public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements MemberService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -62,21 +62,21 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
 
         //用户是否注册：mysql
-        QueryWrapper<Member> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(MemberEnum.MOBILE.getColumn(), mobile);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(UserEnum.MOBILE.getColumn(), mobile);
         Integer count = baseMapper.selectCount(queryWrapper);
         if(count > 0){
             throw new MyException(ResultCodeEnum.REGISTER_MOBLE_ERROR);
         }
 
         //注册
-        Member member = new Member();
-        member.setNickname(nickname);
-        member.setMobile(mobile);
-        member.setPassword(MD5.encrypt(password));
-        member.setAvatar("https://thirdwx.qlogo.cn/mmopen/vi_32/FBickBicLQIrov5BT9jNUYBnPzMNibIkmfcOczxySDYn8psZQ9fgoLF6V9zuonicvaG6AEYPFfSefW7Tc8uB1ykWzQ/132");
-        member.setIsDisabled(false);
-        baseMapper.insert(member);
+        User user = new User();
+        user.setNickname(nickname);
+        user.setMobile(mobile);
+        user.setPassword(MD5.encrypt(password));
+        user.setAvatar("https://thirdwx.qlogo.cn/mmopen/vi_32/FBickBicLQIrov5BT9jNUYBnPzMNibIkmfcOczxySDYn8psZQ9fgoLF6V9zuonicvaG6AEYPFfSefW7Tc8uB1ykWzQ/132");
+        user.setIsDisabled(false);
+        baseMapper.insert(user);
     }
 
     @Override
@@ -93,28 +93,28 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
 
         //校验手机号是否存在
-        QueryWrapper<Member> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(MemberEnum.MOBILE.getColumn(), mobile);
-        Member member = baseMapper.selectOne(queryWrapper);
-        if(member == null){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(UserEnum.MOBILE.getColumn(), mobile);
+        User user = baseMapper.selectOne(queryWrapper);
+        if(user == null){
             throw new MyException(ResultCodeEnum.LOGIN_MOBILE_ERROR);
         }
 
         //校验密码是否正确
-        if(!MD5.encrypt(password).equals(member.getPassword())){
+        if(!MD5.encrypt(password).equals(user.getPassword())){
             throw new MyException(ResultCodeEnum.LOGIN_PASSWORD_ERROR);
         }
 
         //校验用户是否被禁用
-        if(member.getIsDisabled()){
+        if(user.getIsDisabled()){
             throw new MyException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
         }
 
         //登录：生成token
         JwtInfo info = new JwtInfo();
-        info.setId(member.getId());
-        info.setNickname(member.getNickname());
-        info.setAvatar(member.getAvatar());
+        info.setId(user.getId());
+        info.setNickname(user.getNickname());
+        info.setAvatar(user.getAvatar());
 
         String jwtToken = JwtUtils.getJwtToken(info, 1800);
 
@@ -122,20 +122,20 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     }
 
     @Override
-    public Member getByOpenid(String openid) {
+    public User getByOpenid(String openid) {
 
-        QueryWrapper<Member> memberQueryWrapper = new QueryWrapper<>();
-        memberQueryWrapper.eq(MemberEnum.OPENID.getColumn(), openid);
-        return baseMapper.selectOne(memberQueryWrapper);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq(UserEnum.OPENID.getColumn(), openid);
+        return baseMapper.selectOne(userQueryWrapper);
     }
 
     @Override
-    public MemberDto getMemberDtoByMemberId(String memberId) {
+    public UserDto getUserDtoByUserId(String userId) {
 
-        Member member = baseMapper.selectById(memberId);
-        MemberDto memberDto = new MemberDto();
-        BeanUtils.copyProperties(member, memberDto);
-        return memberDto;
+        User user = baseMapper.selectById(userId);
+        UserDto UserDto = new UserDto();
+        BeanUtils.copyProperties(user, UserDto);
+        return UserDto;
     }
 
     @Override

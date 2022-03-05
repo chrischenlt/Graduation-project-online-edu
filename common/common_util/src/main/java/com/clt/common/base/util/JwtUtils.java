@@ -28,7 +28,7 @@ public class JwtUtils {
         String JwtToken = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setHeaderParam("alg", "HS256")
-                .setSubject("guli-user")//主题
+                .setSubject("online-user")//主题
                 .setIssuedAt(new Date())//颁发时间
                 .setExpiration(DateTime.now().plusSeconds(expire).toDate())//过期时间
                 .claim("id", jwtInfo.getId())//用户id
@@ -78,7 +78,7 @@ public class JwtUtils {
      * @param request
      * @return
      */
-    public static JwtInfo getMemberIdByJwtToken(HttpServletRequest request) {
+    public static JwtInfo getUserIdByJwtToken(HttpServletRequest request) {
         String jwtToken = request.getHeader("token");
         if(StringUtils.isEmpty(jwtToken)) {
             return null;
@@ -88,4 +88,5 @@ public class JwtUtils {
         JwtInfo jwtInfo = new JwtInfo(claims.get("id").toString(), claims.get("nickname").toString(), claims.get("avatar").toString());
         return jwtInfo;
     }
+
 }

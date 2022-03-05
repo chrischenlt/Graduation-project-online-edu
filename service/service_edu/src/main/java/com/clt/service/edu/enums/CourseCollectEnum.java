@@ -7,7 +7,7 @@ package com.clt.service.edu.enums;
 public enum CourseCollectEnum {
 
     COURSE_ID("course_id", "课程ID"),
-    MEMBER_ID("member_id", "会员id"),
+    USER_ID("user_id", "用户id"),
     ;
 
     private final String column;

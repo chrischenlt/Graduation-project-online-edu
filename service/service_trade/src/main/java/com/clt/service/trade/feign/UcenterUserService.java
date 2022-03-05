@@ -1,7 +1,7 @@
 package com.clt.service.trade.feign;
 
-import com.clt.service.base.dto.MemberDto;
-import com.clt.service.trade.feign.fallback.UcenterMemberServiceFallback;
+import com.clt.service.base.dto.UserDto;
+import com.clt.service.trade.feign.fallback.UcenterUserServiceFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @Date 2022/2/10
  */
 @Service
-@FeignClient(value = "service-ucenter", fallback = UcenterMemberServiceFallback.class)
-public interface UcenterMemberService {
+@FeignClient(value = "service-ucenter", fallback = UcenterUserServiceFallback.class)
+public interface UcenterUserService {
 
     @GetMapping("/api/ucenter/member/inner/get-member-dto/{memberId}")
-    MemberDto getMemberDtoByMemberId(@PathVariable(value = "memberId") String memberId);
+    UserDto getUserDtoByUserId(@PathVariable(value = "memberId") String userId);
 }

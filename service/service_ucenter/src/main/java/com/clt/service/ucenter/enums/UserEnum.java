@@ -4,7 +4,7 @@ package com.clt.service.ucenter.enums;
  * @Author 陈力天
  * @Date 2022/2/10
  */
-public enum MemberEnum {
+public enum UserEnum {
 
 
     OPENID("openid", "微信openid"),
@@ -24,7 +24,7 @@ public enum MemberEnum {
     private final String label;
 
 
-    MemberEnum(String column, String label) {
+    UserEnum(String column, String label) {
         this.column = column;
         this.label = label;
     }

@@ -37,7 +37,7 @@ public class ApiOrderController {
     @PostMapping("auth/save/{courseId}")
     public R save(@PathVariable String courseId, HttpServletRequest request){
 
-        JwtInfo jwtInfo = JwtUtils.getMemberIdByJwtToken(request);
+        JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);
         String orderId = orderService.saveOrder(courseId, jwtInfo.getId());
         return R.ok().data("orderId", orderId);
     }
@@ -45,7 +45,7 @@ public class ApiOrderController {
     @ApiOperation("获取订单")
     @GetMapping("auth/get/{orderId}")
     public R get(@PathVariable String orderId, HttpServletRequest request) {
-        JwtInfo jwtInfo = JwtUtils.getMemberIdByJwtToken(request);
+        JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);
         Order order = orderService.getByOrderId(orderId, jwtInfo.getId());
         return R.ok().data("item", order);
     }
@@ -53,7 +53,7 @@ public class ApiOrderController {
     @ApiOperation( "判断课程是否购买")
     @GetMapping("auth/is-buy/{courseId}")
     public R isBuyByCourseId(@PathVariable String courseId, HttpServletRequest request) {
-        JwtInfo jwtInfo = JwtUtils.getMemberIdByJwtToken(request);
+        JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);
         Boolean isBuy = orderService.isBuyByCourseId(courseId, jwtInfo.getId());
         return R.ok().data("isBuy", isBuy);
     }
@@ -61,7 +61,7 @@ public class ApiOrderController {
     @ApiOperation(value = "获取当前用户订单列表")
     @GetMapping("auth/list")
     public R list(HttpServletRequest request) {
-        JwtInfo jwtInfo = JwtUtils.getMemberIdByJwtToken(request);
+        JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);
         List<Order> list = orderService.selectByMemberId(jwtInfo.getId());
         return R.ok().data("items", list);
     }
@@ -69,7 +69,7 @@ public class ApiOrderController {
     @ApiOperation(value = "删除订单")
     @DeleteMapping("auth/remove/{orderId}")
     public R remove(@PathVariable String orderId, HttpServletRequest request) {
-        JwtInfo jwtInfo = JwtUtils.getMemberIdByJwtToken(request);
+        JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);
         boolean result = orderService.removeById(orderId, jwtInfo.getId());
         if(result){
             return R.ok().message("删除成功");

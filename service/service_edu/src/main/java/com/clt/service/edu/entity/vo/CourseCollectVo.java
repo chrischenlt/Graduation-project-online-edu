@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 public class CourseCollectVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String id;
-    private String courseId; //课程id
+    private String id; //课程id
+//    private String courseId; //课程id
     private String title;//标题
     private BigDecimal price;//价格
     private Integer lessonNum;//课时数

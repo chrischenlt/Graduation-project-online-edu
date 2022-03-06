@@ -188,7 +188,7 @@ public class ApiWxController {
         jwtInfo.setId(user.getId());
         jwtInfo.setNickname(user.getNickname());
         jwtInfo.setAvatar(user.getAvatar());
-        String jwtToken = JwtUtils.getJwtToken(jwtInfo, 1800);
+        String jwtToken = JwtUtils.getJwtToken(jwtInfo, 7200);
 
         return "redirect:http://localhost:3000?token=" + jwtToken;
     }

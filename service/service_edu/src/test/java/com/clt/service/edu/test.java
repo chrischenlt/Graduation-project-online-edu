@@ -26,6 +26,8 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -51,8 +53,11 @@ public class test {
     private CourseCollectService courseCollectService;
 
     @Test
-    public void test() throws Exception {
-        courseCollectService.insertOrUpdateCourseLike("1", "1", "1");
+    public void test1() throws Exception {
+        ZSetOperations<String, String> opsForZSet = redisTemplate.opsForZSet();
+        Double score = opsForZSet.score("Zset_Record_All_Course_Collect_By_UserId:" + "1491038699188744193", "1487075970371407873");
+        System.out.println(score.toString());
+
     }
 
     @Test

@@ -116,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         info.setNickname(user.getNickname());
         info.setAvatar(user.getAvatar());
 
-        String jwtToken = JwtUtils.getJwtToken(info, 1800);
+        String jwtToken = JwtUtils.getJwtToken(info, 7200);
 
         return jwtToken;
     }

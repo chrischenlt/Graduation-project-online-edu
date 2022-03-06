@@ -77,6 +77,9 @@ public class CourseController {
     public R updateCourseById(@ApiParam(value = "课程Id", required = true)
                               @RequestBody CourseInfoForm courseInfoForm) {
 
+        // todo 缓存
+
+
         courseService.updateCourseInfoById(courseInfoForm);
 
         return R.ok().message("数据更新成功");

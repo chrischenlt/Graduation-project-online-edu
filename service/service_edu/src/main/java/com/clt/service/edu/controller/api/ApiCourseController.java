@@ -68,8 +68,6 @@ public class ApiCourseController {
 
         //查询当前课程的嵌套章节和课时信息
         List<ChapterVo> chapterVoList = chapterService.nestedList(courseId);
-        log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        log.error(Thread.currentThread().getName());
         return R.ok().data("course", webCourseVo).data("chapterVoList", chapterVoList);
     }
 
@@ -106,7 +104,7 @@ public class ApiCourseController {
 
 
     @ApiOperation(value = "获取课程收藏列表")
-    @GetMapping("auth/collect/list")
+    @GetMapping("auth/get/collect/list")
     public R collectList(HttpServletRequest request) {
 
         JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);

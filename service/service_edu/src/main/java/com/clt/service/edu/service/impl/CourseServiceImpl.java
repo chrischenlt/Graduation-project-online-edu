@@ -108,6 +108,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         CourseDescription courseDescription = new CourseDescription();
         courseDescription.setDescription(courseInfoForm.getDescription());
         courseDescription.setId(courseInfoForm.getId());
+        redisTemplate.delete(COURSE_FOR_REDIS_COURSEID_KEY + courseInfoForm.getId());
         courseDescriptionMapper.updateById(courseDescription);
     }
 

@@ -201,7 +201,13 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
     public void insertOrUpdateCourseLike(String courseId, String isLike, String userId) {
         // 记录点赞数,将用户是否点赞得相关信息用hash结构保存在redis中，点赞：有值 ，未点赞：null；
         if (LIKE.equals(isLike)) {
-            opsForValue.increment(COURSE_LIKE_COUNT + courseId);
+            Long likeCount = opsForValue.increment(COURSE_LIKE_COUNT + courseId);
+            // 每100个收藏持久化到mysql
+            if (likeCount % 100 == 0) {
+                Course course = new Course();
+                course.setLikeCount(likeCount);
+                courseMapper.updateById(course);
+            }
             CourseLike courseLike = new CourseLike();
             courseLike.setCourseId(courseId);
             courseLike.setUserId(userId);

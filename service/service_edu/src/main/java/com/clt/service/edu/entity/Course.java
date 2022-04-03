@@ -68,5 +68,8 @@ public class Course extends BaseEntity {
     @ApiModelProperty(value = "喜欢课程人数")
     private Long likeCount;
 
+    @ApiModelProperty(value = "收藏课程人数")
+    private Long collectCount;
+
 
 }

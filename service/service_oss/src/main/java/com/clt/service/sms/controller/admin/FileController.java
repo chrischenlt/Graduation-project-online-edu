@@ -20,7 +20,6 @@ import java.io.InputStream;
  * @Date 2022/1/16
  */
 @Api(description = "阿里云文件管理")
-
 @RestController
 @RequestMapping("/admin/oss/file")
 @Slf4j

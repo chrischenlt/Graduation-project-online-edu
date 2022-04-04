@@ -7,12 +7,14 @@ import com.clt.service.edu.feign.VodMediaService;
 import com.clt.service.edu.mapper.VideoMapper;
 import com.clt.service.edu.service.VideoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -60,11 +62,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         queryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), courseId);
 
         List<Map<String, Object>> maps = baseMapper.selectMaps(queryWrapper);
-        List<String> videoSourceIdList = maps.stream().map(data -> {
+        List<String> videoSourceIdList = maps.stream().filter(s -> !Objects.isNull(s)).map(data -> {
             return (String) data.get(VideoEnum.VIDEO_SOURCE_ID.getColumn());
         }).collect(Collectors.toList());
 
-        vodMediaService.removeVideoByIdList(videoSourceIdList);
-
+        if (CollectionUtils.isNotEmpty(videoSourceIdList)) {
+            vodMediaService.removeVideoByIdList(videoSourceIdList);
+        }
     }
 }

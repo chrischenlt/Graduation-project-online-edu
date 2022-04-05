@@ -14,7 +14,6 @@ public class OrderNoUtils {
 
     /**
      * 获取订单号
-     * @return
      */
     public static String getOrderNo() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");

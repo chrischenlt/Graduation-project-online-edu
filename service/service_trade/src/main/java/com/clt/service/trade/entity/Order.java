@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.clt.service.base.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -23,6 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("trade_order")
 @ApiModel(value="Order对象", description="订单")
+@Builder
 public class Order extends BaseEntity {
 
     private static final long serialVersionUID=1L;

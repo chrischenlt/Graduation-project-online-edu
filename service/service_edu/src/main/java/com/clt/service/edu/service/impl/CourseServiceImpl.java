@@ -67,7 +67,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     private ValueOperations<String, String> opsForValue;
 
-    private static final String COURSE_VIEW_COUNT_KEY = "Course_View_Count:";
+    private static final String COURSE_VIEW_COUNT_KEY = "Course_View_Count_CourseId:";
     private static final String COURSE_FOR_REDIS_COURSEID_KEY = "CourseForRedis_CourseId:";
 
 
@@ -249,7 +249,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return null;
         }
 
-
         // 先去redis中查是否有相关课程的缓存
         String CourseForRedisJson = opsForValue.get(COURSE_FOR_REDIS_COURSEID_KEY + courseId);
         CourseForRedis courseForRedis = JSON.parseObject(CourseForRedisJson, CourseForRedis.class);
@@ -268,7 +267,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             BeanUtils.copyProperties(courseForRedis, webCourseVo);
         }
 
-
         //更新浏览数
         Long viewCount = redisTemplate.opsForValue().increment(COURSE_VIEW_COUNT_KEY + courseId);
         webCourseVo.setViewCount(viewCount);
@@ -285,6 +283,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             webCourseVo.setLike(courseCollectService.isLike(courseId, userId));
             webCourseVo.setCollect(courseCollectService.isCollect(courseId, userId));
         }
+
+        // 填充点赞总数
 
         // 填充课程收藏和喜欢总数
         webCourseVo.setLikeCount(courseCollectService.getCourseLikeCount(courseId));

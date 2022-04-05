@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -55,38 +56,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         queryWrapper.eq(OrderEnum.COURSE_ID.getColumn(), courseId);
         queryWrapper.eq(OrderEnum.MEMBER_ID.getColumn(), userId);
         Order orderExist = baseMapper.selectOne(queryWrapper);
-        if(orderExist != null){
+        if(Objects.nonNull(orderExist)){
             return orderExist.getId();//如果订单已存在，则直接返回订单id
         }
 
         //查询课程信息
         CourseDto courseDto = eduCourseService.getCourseDtoById(courseId);
-        if(courseDto == null){
+        if(Objects.isNull(courseDto)){
             throw new MyException(ResultCodeEnum.PARAM_ERROR);
         }
 
         //查询用户信息
         UserDto userDto = ucenterUserService.getUserDtoByUserId(userId);
-        if(userDto == null){
+        if(Objects.isNull(userDto)){
             throw new MyException(ResultCodeEnum.PARAM_ERROR);
         }
 
         //创建订单
-        Order order = new Order();
-        order.setOrderNo(OrderNoUtils.getOrderNo()); //订单号
-
-        order.setCourseId(courseId);
-        order.setCourseTitle(courseDto.getTitle());
-        order.setCourseCover(courseDto.getCover());
-        order.setTeacherName(courseDto.getTeacherName());
-        order.setTotalFee(courseDto.getPrice().multiply(new BigDecimal(100)));//单位：分
-
-        order.setMemberId(userId);
-        order.setMobile(userDto.getMobile());
-        order.setNickname(userDto.getNickname());
-
-        order.setStatus(0);//未支付
-        order.setPayType(1); //微信支付
+        Order order = Order.builder()
+                .orderNo(OrderNoUtils.getOrderNo())
+                .courseId(courseId)
+                .courseTitle(courseDto.getTitle())
+                .courseCover(courseDto.getCover())
+                .teacherName(courseDto.getTeacherName())
+                .totalFee(courseDto.getPrice().multiply(new BigDecimal(100)))
+                .memberId(userId)
+                .mobile(userDto.getMobile())
+                .nickname(userDto.getNickname())
+                .status(0)  //未支付
+                .payType(1) //微信支付
+                .build();
 
         baseMapper.insert(order);
         return order.getId();

@@ -2,6 +2,7 @@ package com.clt.service.edu.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.enums.BaseEnum;
@@ -69,6 +70,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     private static final String COURSE_VIEW_COUNT_KEY = "Course_View_Count_CourseId:";
     private static final String COURSE_FOR_REDIS_COURSEID_KEY = "CourseForRedis_CourseId:";
+
+    // 课程购买总数key
+    private static final String COURSE_BUY_COUNT = "Course_Buy_Count_CourseId:";
 
 
     @PostConstruct
@@ -271,7 +275,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         Long viewCount = redisTemplate.opsForValue().increment(COURSE_VIEW_COUNT_KEY + courseId);
         webCourseVo.setViewCount(viewCount);
         assert viewCount != null;
-        if (viewCount % 100 == 0) {
+        if (viewCount % 10 == 0) {
             Course course = new Course();
             course.setId(courseId);
             course.setViewCount(viewCount);
@@ -285,6 +289,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         }
 
         // 填充点赞总数
+        webCourseVo.setBuyCount(Long.parseLong(courseCollectService.getCourseBuyCount(courseId)));
 
         // 填充课程收藏和喜欢总数
         webCourseVo.setLikeCount(courseCollectService.getCourseLikeCount(courseId));
@@ -316,10 +321,15 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Override
     public void updateBuyCountByCourseId(String courseId) {
 
-        Course course = baseMapper.selectById(courseId);
-        long buyCount = course.getBuyCount() + 1;
-        course.setBuyCount(buyCount);
-        baseMapper.updateById(course);
+        Long increment = opsForValue.increment(COURSE_BUY_COUNT + courseId);
+
+        assert increment != null;
+//        if (increment % 3 == 0) {
+            UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
+            courseUpdateWrapper.eq(BaseEnum.ID.getColumn(), courseId);
+            courseUpdateWrapper.set(CourseEnum.BUY_COUNT.getColumn(), increment);
+            baseMapper.update(null, courseUpdateWrapper);
+//        }
     }
 
 }

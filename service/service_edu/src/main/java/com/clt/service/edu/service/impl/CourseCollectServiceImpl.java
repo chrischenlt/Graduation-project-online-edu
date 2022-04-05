@@ -11,6 +11,7 @@ import com.clt.service.edu.entity.CourseLike;
 import com.clt.service.edu.entity.vo.CourseCollectVo;
 import com.clt.service.edu.entity.vo.WebCourseVo;
 import com.clt.service.edu.enums.CourseCollectEnum;
+import com.clt.service.edu.enums.CourseEnum;
 import com.clt.service.edu.mapper.CourseCollectMapper;
 import com.clt.service.edu.mapper.CourseLikeMapper;
 import com.clt.service.edu.mapper.CourseMapper;
@@ -66,6 +67,9 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
     private static final String RECORD_ALL_COURSE_LIKE_BY_USERID_KEY = "Record_All_Course_Like_By_UserId:";
     private static final String ZSET_RECORD_ALL_COURSE_LIKE_BY_USERID_KEY = "Zset_Record_All_Course_Like_By_UserId:";
     private static final String COURSE_LIKE_COUNT = "Course_Like_Count_CourseId:";
+
+    // 课程购买总数key
+    private static final String COURSE_BUY_COUNT = "Course_Buy_Count_CourseId:";
 
 
     private static final String COLLECT = "1";
@@ -202,8 +206,8 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
         // 记录点赞数,将用户是否点赞得相关信息用hash结构保存在redis中，点赞：有值 ，未点赞：null；
         if (LIKE.equals(isLike)) {
             Long likeCount = opsForValue.increment(COURSE_LIKE_COUNT + courseId);
-            // 每100个收藏持久化到mysql
-            if (likeCount % 100 == 0) {
+            // 每10个收藏持久化到mysql
+            if (likeCount % 10 == 0) {
                 Course course = new Course();
                 course.setLikeCount(likeCount);
                 courseMapper.updateById(course);
@@ -274,6 +278,20 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
         queryWrapper.eq(CourseCollectEnum.USER_ID.getColumn(), userId);
         List<CourseLike> courseCollects = courseLikeMapper.selectList(queryWrapper);
         return courseCollects.size() > 0;
+    }
+
+    @Override
+    public String getCourseBuyCount(String courseId) {
+
+        String buyCount = opsForValue.get(COURSE_BUY_COUNT + courseId);
+        if (StringUtils.isEmpty(buyCount)) {
+            Course course = courseMapper.selectById(courseId);
+            Long buyCountFromDB = course.getBuyCount();
+            buyCount = String.valueOf(buyCountFromDB);
+            opsForValue.set(COURSE_BUY_COUNT + courseId, String.valueOf(buyCountFromDB));
+        }
+
+        return buyCount;
     }
 
 

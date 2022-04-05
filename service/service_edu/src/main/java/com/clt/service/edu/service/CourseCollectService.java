@@ -29,4 +29,6 @@ public interface CourseCollectService extends IService<CourseCollect> {
     String getCourseCollectCount(String courseId);
 
     boolean isLike(String courseId, String userId);
+
+    String getCourseBuyCount(String courseId);
 }

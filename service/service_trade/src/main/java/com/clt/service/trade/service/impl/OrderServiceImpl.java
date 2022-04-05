@@ -162,6 +162,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         eduCourseService.updateBuyCountByCourseId(order.getCourseId());
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateOrderStatus(String orderNo) {
+
+        //更新订单状态
+        Order order = this.getOrderByOrderNo(orderNo);
+        order.setStatus(1);//支付成功
+        baseMapper.updateById(order);
+
+        //记录支付日志
+        PayLog payLog = new PayLog();
+        payLog.setOrderNo(orderNo);
+        payLog.setPayTime(new Date());
+        payLog.setPayType(1);//支付类型：微信支付
+        payLog.setTotalFee(Long.parseLong(order.getTotalFee().toString().split("\\.")[0]));
+        payLog.setTradeState("200");
+        payLog.setTransactionId(orderNo);
+        payLogMapper.insert(payLog);
+
+        //更新课程销量
+        eduCourseService.updateBuyCountByCourseId(order.getCourseId());
+    }
+
+
     /**
      * 查询支付结果
      * @param orderNo

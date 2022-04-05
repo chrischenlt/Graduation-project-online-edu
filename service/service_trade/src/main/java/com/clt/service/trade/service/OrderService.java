@@ -30,6 +30,8 @@ public interface OrderService extends IService<Order> {
 
     void updateOrderStatus(Map<String, String> notifyMap);
 
+    void updateOrderStatus(String orderNo);
+
     boolean queryPayStatus(String orderNo);
 
 }

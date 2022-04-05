@@ -73,18 +73,23 @@ public class ApiOrderController {
         boolean result = orderService.removeById(orderId, jwtInfo.getId());
         if(result){
             return R.ok().message("删除成功");
-        }else{
-            return R.error().message("数据不存在");
         }
+        return R.error().message("数据不存在");
     }
 
-    @GetMapping("/query-pay-status/{orderNo}")
+    @GetMapping("query-pay-status/{orderNo}")
     public R queryPayStatus(@PathVariable String orderNo) {
         boolean result = orderService.queryPayStatus(orderNo);
         if (result) {//支付成功
             return R.ok().message("支付成功");
         }
         return R.setResult(ResultCodeEnum.PAY_RUN);//支付中
+    }
+
+    @GetMapping("finish/order/pay/{orderNo}")
+    public R finishOrderPay(@PathVariable String orderNo) {
+        orderService.updateOrderStatus(orderNo);
+        return R.ok().message("支付成功");
     }
 
 }

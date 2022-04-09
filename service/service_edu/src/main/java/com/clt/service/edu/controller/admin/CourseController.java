@@ -77,9 +77,6 @@ public class CourseController {
     public R updateCourseById(@ApiParam(value = "课程Id", required = true)
                               @RequestBody CourseInfoForm courseInfoForm) {
 
-        // todo 缓存
-
-
         courseService.updateCourseInfoById(courseInfoForm);
 
         return R.ok().message("数据更新成功");
@@ -106,9 +103,7 @@ public class CourseController {
         videoService.removeMediaVideoByCourseId(id);
 
         //删除课程封面
-        if (!courseService.removeCoverById(id)) {
-            log.error("oss课程封面图片删除失败, id : {}", id);
-        }
+        courseService.removeCoverById(id);
 
         //删除课程
         if (courseService.removeCourseById(id)) {

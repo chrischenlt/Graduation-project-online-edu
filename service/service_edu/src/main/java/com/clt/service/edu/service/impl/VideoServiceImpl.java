@@ -62,6 +62,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         queryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), courseId);
 
         List<Map<String, Object>> maps = baseMapper.selectMaps(queryWrapper);
+
         List<String> videoSourceIdList = maps.stream().filter(s -> !Objects.isNull(s)).map(data -> {
             return (String) data.get(VideoEnum.VIDEO_SOURCE_ID.getColumn());
         }).collect(Collectors.toList());

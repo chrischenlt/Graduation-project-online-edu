@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.result.R;
 import com.clt.service.base.dto.CourseDto;
+import com.clt.service.edu.config.ThreadPoolConfig;
 import com.clt.service.edu.entity.*;
 import com.clt.service.edu.entity.form.CourseInfoForm;
 import com.clt.service.edu.entity.vo.*;
@@ -18,6 +19,7 @@ import com.clt.service.edu.service.CourseCollectService;
 import com.clt.service.edu.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -45,6 +48,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2022-01-06
  */
 @Service
+@Slf4j
 public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> implements CourseService {
 
     @Autowired
@@ -65,6 +69,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private CourseCollectService courseCollectService;
     @Resource
     private Redisson redisson;
+    @Resource
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     private ValueOperations<String, String> opsForValue;
 
@@ -79,7 +85,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private void init() {
         opsForValue = redisTemplate.opsForValue();
     }
-
 
 
     @Override
@@ -112,6 +117,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         CourseDescription courseDescription = new CourseDescription();
         courseDescription.setDescription(courseInfoForm.getDescription());
         courseDescription.setId(courseInfoForm.getId());
+        // 更新课程数据成功后删除Redis中的课程信息
         redisTemplate.delete(COURSE_FOR_REDIS_COURSEID_KEY + courseInfoForm.getId());
         courseDescriptionMapper.updateById(courseDescription);
     }
@@ -155,45 +161,57 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     @Override
-    public boolean removeCoverById(String id) {
+    public void removeCoverById(String id) {
         Course course = baseMapper.selectById(id);
         if (Objects.nonNull(course)) {
-            String cover = course.getCover();
-            if (!StringUtils.isEmpty(cover)) {
-                R r = ossFileService.removeFile(cover);
-                return r.getSuccess();
-            }
+            // 异步处理
+            threadPoolTaskExecutor.execute(() -> {
+                String cover = course.getCover();
+                if (!StringUtils.isEmpty(cover)) {
+                    R r = ossFileService.removeFile(cover);
+                    if (!r.getSuccess()) {
+                        log.error("oss课程封面图片删除失败, cover : {}", cover);
+                    }
+                }
+            });
         }
-        return false;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean removeCourseById(String id) {
-        //根据courseId删除Video(课时)
-        QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
-        videoQueryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), id);
-        videoMapper.delete(videoQueryWrapper);
 
-        //根据courseId删除Chapter(章节)
-        QueryWrapper<Chapter> chapterQueryWrapper = new QueryWrapper<>();
-        chapterQueryWrapper.eq(ChapterEnum.COURSE_ID.getColumn(), id);
-        chapterMapper.delete(chapterQueryWrapper);
+        // 异步线程进行相关处理，提高页面请求响应速度
+        threadPoolTaskExecutor.execute(() -> {
 
-        //根据courseId删除Comment(评论)
-        QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
-        commentQueryWrapper.eq(CommentEnum.COURSE_ID.getColumn(), id);
-        commentMapper.delete(commentQueryWrapper);
+            //根据courseId删除Video(课时)
+            QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
+            videoQueryWrapper.eq(VideoEnum.COURSE_ID.getColumn(), id);
+            videoMapper.delete(videoQueryWrapper);
 
-        //根据courseId删除CourseCollect(课程收藏)
-        QueryWrapper<CourseCollect> courseCollectQueryWrapper = new QueryWrapper<>();
-        courseCollectQueryWrapper.eq(CourseCollectEnum.COURSE_ID.getColumn(), id);
-        courseCollectMapper.delete(courseCollectQueryWrapper);
+            //根据courseId删除Chapter(章节)
+            QueryWrapper<Chapter> chapterQueryWrapper = new QueryWrapper<>();
+            chapterQueryWrapper.eq(ChapterEnum.COURSE_ID.getColumn(), id);
+            chapterMapper.delete(chapterQueryWrapper);
 
-        //根据courseId删除CourseDescription(课程详情)
-        courseDescriptionMapper.deleteById(id);
+            //根据courseId删除Comment(评论)
+            QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
+            commentQueryWrapper.eq(CommentEnum.COURSE_ID.getColumn(), id);
+            commentMapper.delete(commentQueryWrapper);
 
-        //删除课程
+            //根据courseId删除CourseCollect(课程收藏)
+            QueryWrapper<CourseCollect> courseCollectQueryWrapper = new QueryWrapper<>();
+            courseCollectQueryWrapper.eq(CourseCollectEnum.COURSE_ID.getColumn(), id);
+            courseCollectMapper.delete(courseCollectQueryWrapper);
+
+            //根据courseId删除CourseDescription(课程详情)
+            courseDescriptionMapper.deleteById(id);
+
+            // 更新课程数据成功后删除Redis中的课程信息
+            redisTemplate.delete(COURSE_FOR_REDIS_COURSEID_KEY + id);
+        });
+
+
         return this.removeById(id);
     }
 
@@ -288,7 +306,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             webCourseVo.setCollect(courseCollectService.isCollect(courseId, userId));
         }
 
-        // 填充点赞总数
+        // 填充购买总数
         webCourseVo.setBuyCount(Long.parseLong(courseCollectService.getCourseBuyCount(courseId)));
 
         // 填充课程收藏和喜欢总数
@@ -325,10 +343,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
         assert increment != null;
 //        if (increment % 3 == 0) {
-            UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
-            courseUpdateWrapper.eq(BaseEnum.ID.getColumn(), courseId);
-            courseUpdateWrapper.set(CourseEnum.BUY_COUNT.getColumn(), increment);
-            baseMapper.update(null, courseUpdateWrapper);
+        UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
+        courseUpdateWrapper.eq(BaseEnum.ID.getColumn(), courseId);
+        courseUpdateWrapper.set(CourseEnum.BUY_COUNT.getColumn(), increment);
+        baseMapper.update(null, courseUpdateWrapper);
 //        }
     }
 

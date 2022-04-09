@@ -27,7 +27,7 @@ public interface CourseService extends IService<Course> {
 
     IPage<CourseVo> selectPage(Long page, Long limit, CourseQueryVo courseQueryVo);
 
-    boolean removeCoverById(String id);
+    void removeCoverById(String id);
 
     boolean removeCourseById(String id);
 

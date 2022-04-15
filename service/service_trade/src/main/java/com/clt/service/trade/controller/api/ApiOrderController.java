@@ -1,6 +1,8 @@
 package com.clt.service.trade.controller.api;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.result.R;
 import com.clt.common.base.result.ResultCodeEnum;
 import com.clt.common.base.util.JwtInfo;
@@ -9,6 +11,7 @@ import com.clt.service.trade.entity.Order;
 import com.clt.service.trade.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -90,6 +93,25 @@ public class ApiOrderController {
     public R finishOrderPay(@PathVariable String orderNo) {
         orderService.updateOrderStatus(orderNo);
         return R.ok().message("支付成功");
+    }
+
+    @GetMapping("list")
+    public R getAllOrder() {
+//        List<Order> res = orderService.getAllOrder();
+        List<Order> res = orderService.list();
+        return R.ok().data("items", res);
+    }
+
+    @ApiOperation("讲师分页列表")
+    @GetMapping("list/{page}/{limit}")
+    public R listPage(@ApiParam("当前页码") @PathVariable Long page,
+                      @ApiParam("每页记录数") @PathVariable Long limit) {
+
+        Page<Order> pageParam = new Page<>(page, limit);
+        IPage<Order> pageModel = orderService.selectPage(pageParam);
+        List<Order> records = pageModel.getRecords();
+        long total = pageModel.getTotal();
+        return R.ok().data("total", total).data("rows", records);
     }
 
 }

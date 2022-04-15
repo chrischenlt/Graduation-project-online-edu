@@ -1,5 +1,7 @@
 package com.clt.service.trade.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.service.trade.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -34,4 +36,7 @@ public interface OrderService extends IService<Order> {
 
     boolean queryPayStatus(String orderNo);
 
+    List<Order> getAllOrder();
+
+    IPage<Order> selectPage(Page<Order> pageParam);
 }

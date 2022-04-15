@@ -1,10 +1,7 @@
 package com.clt.common.base.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -237,5 +234,9 @@ public class RedisCacheUtils {
     public Collection<String> keys(final String pattern)
     {
         return redisTemplate.keys(pattern);
+    }
+
+    public Long bitCount(RedisTemplate redisTemplate, String key) {
+        return (Long)redisTemplate.execute((RedisCallback<Long>) con -> con.bitCount(key.getBytes()));
     }
 }

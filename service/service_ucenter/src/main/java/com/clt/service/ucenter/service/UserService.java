@@ -6,6 +6,8 @@ import com.clt.service.ucenter.entity.User;
 import com.clt.service.ucenter.entity.vo.LoginVo;
 import com.clt.service.ucenter.entity.vo.RegisterVo;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * <p>
  * 会员表 服务类
@@ -25,4 +27,8 @@ public interface UserService extends IService<User> {
     UserDto getUserDtoByUserId(String memberId);
 
     Integer countRegisterNum(String day);
+
+    String loginCallBackWithWechat(String code, String state, HttpSession session);
+
+    Long getUserLoginTime(String userId);
 }

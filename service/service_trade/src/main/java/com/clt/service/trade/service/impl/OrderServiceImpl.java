@@ -1,6 +1,8 @@
 package com.clt.service.trade.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.result.ResultCodeEnum;
 import com.clt.service.base.dto.CourseDto;
@@ -20,12 +22,10 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <p>
@@ -198,5 +198,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         queryWrapper.eq("order_no", orderNo);
         Order order = baseMapper.selectOne(queryWrapper);
         return order.getStatus() == 1;
+    }
+
+    @Override
+    public List<Order> getAllOrder() {
+        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
+        orderQueryWrapper.last("limit 10");
+        List<Order> orderList = baseMapper.selectList(orderQueryWrapper);
+        return orderList;
+    }
+
+    @Override
+    public IPage<Order> selectPage(Page<Order> pageParam) {
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByAsc(BaseEnum.GMT_CREATE.getColumn());
+        return baseMapper.selectPage(pageParam, queryWrapper);
     }
 }

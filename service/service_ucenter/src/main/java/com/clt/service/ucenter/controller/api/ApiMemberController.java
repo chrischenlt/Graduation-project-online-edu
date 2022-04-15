@@ -66,12 +66,20 @@ public class ApiMemberController {
     }
 
     @ApiOperation("根据会员id查询会员信息")
-    @GetMapping("inner/get-member-dto/{memberId}")
+    @GetMapping("inner/get-member-dto/{userId}")
     public UserDto getUserDtoByMemberId(
             @ApiParam(value = "会员ID", required = true)
             @PathVariable String userId){
         UserDto UserDto = userService.getUserDtoByUserId(userId);
         return UserDto;
+    }
+
+    @GetMapping("auth/get/user/login/time")
+    public R getUserLoginTime(HttpServletRequest request) {
+        JwtInfo jwtInfo = JwtUtils.getUserIdByJwtToken(request);
+
+        Long userLoginTime = userService.getUserLoginTime(jwtInfo.getId());
+        return R.ok().data("loginTime", userLoginTime);
     }
 
 }

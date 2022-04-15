@@ -25,6 +25,7 @@ import org.redisson.api.RBatch;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -54,9 +55,7 @@ public class test {
 
     @Test
     public void test1() throws Exception {
-        ZSetOperations<String, String> opsForZSet = redisTemplate.opsForZSet();
-        Double score = opsForZSet.score("Zset_Record_All_Course_Collect_By_UserId:" + "1491038699188744193", "1487075970371407873");
-        System.out.println(score.toString());
+        System.out.println();
 
     }
 

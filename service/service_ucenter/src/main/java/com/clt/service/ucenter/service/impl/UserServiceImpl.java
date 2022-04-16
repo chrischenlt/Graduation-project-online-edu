@@ -1,6 +1,9 @@
 package com.clt.service.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.result.ResultCodeEnum;
 import com.clt.common.base.util.*;
 import com.clt.service.base.dto.UserDto;
@@ -8,6 +11,7 @@ import com.clt.service.base.exception.MyException;
 import com.clt.service.ucenter.entity.User;
 import com.clt.service.ucenter.entity.vo.LoginVo;
 import com.clt.service.ucenter.entity.vo.RegisterVo;
+import com.clt.service.ucenter.entity.vo.UserQueryVo;
 import com.clt.service.ucenter.enums.UserEnum;
 import com.clt.service.ucenter.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,10 +28,7 @@ import sun.util.calendar.BaseCalendar;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 /**
  * <p>
@@ -253,12 +254,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setNickname(nickname);
             user.setAvatar(avatar);
             user.setSex(sex.intValue());
+            user.setIsDisabled(false);
             this.save(user);
         }
 
 
         // 校验用户是否被禁用
-        if (user.getIsDeleted()) {
+        if (user.getIsDisabled()) {
             throw new MyException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
         }
 
@@ -281,5 +283,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         RedisCacheUtils redisCacheUtils = new RedisCacheUtils();
 
         return redisCacheUtils.bitCount(redisTemplate, "UserId:" + userId);
+    }
+
+    @Override
+    public IPage<User> selectPage(Long page, Long limit, UserQueryVo userQueryVo) {
+
+        //组装查询条件
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc(BaseEnum.GMT_CREATE.getColumn());
+
+        String mobile = userQueryVo.getMobile();
+        String nickname = userQueryVo.getNickname();
+
+        if (!StringUtils.isEmpty(mobile)) {
+            queryWrapper.like(UserEnum.MOBILE.getColumn(), mobile);
+        }
+
+        if (!StringUtils.isEmpty(nickname)) {
+            queryWrapper.eq(UserEnum.NICKNAME.getColumn(), nickname);
+        }
+
+        //组装分页
+        Page<User> pageParam = new Page<>(page, limit);
+
+        return baseMapper.selectPage(pageParam, queryWrapper);
     }
 }

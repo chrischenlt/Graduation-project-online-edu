@@ -1,6 +1,9 @@
 package com.clt.service.ucenter.controller.admin;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.clt.common.base.result.R;
+import com.clt.service.ucenter.entity.User;
+import com.clt.service.ucenter.entity.vo.UserQueryVo;
 import com.clt.service.ucenter.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @Author 陈力天
@@ -35,5 +40,17 @@ public class UserController {
         // todo redis
         Integer num = userService.countRegisterNum(day);
         return R.ok().data("registerNum", num);
+    }
+
+    @ApiOperation("用户分页列表")
+    @GetMapping("list/{page}/{limit}")
+    public R listPage(@ApiParam(value = "当前页码", required = true) @PathVariable Long page,
+                      @ApiParam(value = "每页记录数", required = true) @PathVariable Long limit,
+                      @ApiParam("用户列表查询对象") UserQueryVo userQueryVo){
+
+        IPage<User> pageModel = userService.selectPage(page, limit, userQueryVo);
+        List<User> records = pageModel.getRecords();
+        long total = pageModel.getTotal();
+        return R.ok().data("total", total).data("rows", records);
     }
 }

@@ -141,8 +141,14 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
                 }, data -> {
                     String courseId = data.getCourseId();
                     Date gmtCreate = data.getGmtCreate();
+
+                    // 转化日期格式
+                    BigDecimal bd = new BigDecimal(Long.toString(gmtCreate.getTime()));
+                    String s = bd.toPlainString();
+                    String formatDate = TimeUtils.getFormatDate(Long.parseLong(s));
+
                     CourseCollectVo courseCollectVo = new CourseCollectVo();
-                    courseCollectVo.setGmtCreate(gmtCreate.toString());
+                    courseCollectVo.setGmtCreate(formatDate);
                     courseCollectVo.setId(courseId);
                     return courseCollectVo;
                 }));
@@ -214,6 +220,15 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
         }
 
         return new ArrayList<>(courseId2CourseCollectVo.values());
+    }
+
+    private void addCollectTime(CourseCollectVo courseCollectVo, String userId, String courseId) {
+        Double score = opsForZSet.score(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, courseId);
+        assert score != null;
+        BigDecimal bd = new BigDecimal(score.toString());
+        String s = bd.toPlainString();
+        String formatDate = TimeUtils.getFormatDate(Long.parseLong(s));
+        courseCollectVo.setGmtCreate(formatDate);
     }
 
 

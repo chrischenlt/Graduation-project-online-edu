@@ -84,7 +84,6 @@ public class VideoServiceImpl implements VideoService {
             if(i == size - 1 || i % 20 == 19){
                 //删除
                 //支持传入多个视频ID，多个用逗号分隔。id不能超过20个
-//                log.info("idListStr = " + idListStr.toString());
                 RocketMQUtils.asyncPush(TOPIC, idListStr.toString());
                 //重置idListStr
                 idListStr = new StringBuffer();

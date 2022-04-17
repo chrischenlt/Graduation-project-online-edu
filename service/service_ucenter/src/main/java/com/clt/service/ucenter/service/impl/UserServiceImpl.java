@@ -121,8 +121,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new MyException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
         }
 
-        // 用户登陆成功,到redis中记录
-        redisTemplate.opsForValue().setBit("UserId:" + user.getId(), LocalDate.now().getDayOfYear(), true);
+        // 用户账号验证成功，对bitmap进行对应操作
+        redisTemplate.opsForValue().setBit("Login_Time_UserId:" + user.getId(), LocalDate.now().getDayOfYear(), true);
 
         //登录：生成token
         JwtInfo info = new JwtInfo();
@@ -264,8 +264,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new MyException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
         }
 
-        // 用户登陆成功,到redis中记录
-        redisTemplate.opsForValue().setBit("UserId:" + user.getId(), LocalDate.now().getDayOfYear(), true);
+        // 用户账号验证成功，对bitmap进行对应操作
+        redisTemplate.opsForValue().setBit("Login_Time_UserId:" + user.getId(), LocalDate.now().getDayOfYear(), true);
 
         //则直接使用当前用户的信息登录（生成jwt）
         //member =>Jwt
@@ -282,7 +282,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Long getUserLoginTime(String userId) {
         RedisCacheUtils redisCacheUtils = new RedisCacheUtils();
 
-        return redisCacheUtils.bitCount(redisTemplate, "UserId:" + userId);
+        return redisCacheUtils.bitCount(redisTemplate, "Login_Time_UserId:" + userId);
     }
 
     @Override

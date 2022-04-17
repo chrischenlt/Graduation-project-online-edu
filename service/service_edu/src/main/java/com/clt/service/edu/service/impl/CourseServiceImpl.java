@@ -180,7 +180,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean removeCourseById(String id) {
-
         // 异步线程进行相关处理，提高页面请求响应速度
         threadPoolTaskExecutor.execute(() -> {
 
@@ -210,7 +209,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             // 更新课程数据成功后删除Redis中的课程信息
             redisTemplate.delete(COURSE_FOR_REDIS_COURSEID_KEY + id);
         });
-
 
         return this.removeById(id);
     }

@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.clt.common.base.enums.BaseEnum;
 import com.clt.common.base.util.TimeUtils;
-import com.clt.service.edu.entity.Course;
-import com.clt.service.edu.entity.CourseCollect;
-import com.clt.service.edu.entity.CourseForRedis;
-import com.clt.service.edu.entity.CourseLike;
+import com.clt.service.edu.entity.*;
 import com.clt.service.edu.entity.vo.CourseCollectVo;
 import com.clt.service.edu.entity.vo.WebCourseVo;
 import com.clt.service.edu.enums.CourseCollectEnum;
@@ -18,6 +15,7 @@ import com.clt.service.edu.mapper.CourseMapper;
 import com.clt.service.edu.service.CourseCollectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
@@ -27,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -46,6 +45,7 @@ import java.util.stream.Collectors;
  * @since 2022-01-06
  */
 @Service
+@Slf4j
 public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, CourseCollect> implements CourseCollectService {
 
     @Autowired
@@ -95,49 +95,98 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
     }
 
 
-
     @Override
     public List<CourseCollectVo> selectCourseCollectListByUserId(String userId) {
-        // 从redis的zset中取出最新保存的10条数据
-        Set<String> courseIdSet = opsForZSet.reverseRange(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, 0, 10);
+        // 从redis的zset中取出最新保存的10条数据, set中的内容是CourseCollectForRedis转换成json串的内容
+        Set<String> courseCollectForRedisSet = opsForZSet.reverseRange(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, 0, 10);
 
-        if (CollectionUtils.isEmpty(courseIdSet)) {
+        if (CollectionUtils.isEmpty(courseCollectForRedisSet)) {
             QueryWrapper<CourseCollect> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq(CourseCollectEnum.USER_ID.getColumn(), userId);
             queryWrapper.orderByDesc(BaseEnum.GMT_CREATE.getColumn());
             queryWrapper.last("limit 10");
             List<CourseCollect> courseCollectList = this.baseMapper.selectList(queryWrapper);
-            courseIdSet = new HashSet<>();
-            for (CourseCollect courseCollect : courseCollectList) {
-                opsForZSet.add(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, courseCollect.getCourseId(), (double) courseCollect.getGmtCreate().getTime());
-                courseIdSet.add(courseCollect.getCourseId());
+
+            // 如果MySQL查询出来的数据为空难则表示该用户没有收藏过课程
+            if (CollectionUtils.isEmpty(courseCollectList)) {
+                return new ArrayList<>(0);
+            }
+
+            List<CourseCollectForRedis> courseCollectForRedisList = new ArrayList<>(courseCollectList.size());
+
+            courseCollectList.forEach(courseCollect -> {
+                CourseCollectForRedis courseCollectForRedis = new CourseCollectForRedis();
+                BeanUtils.copyProperties(courseCollect, courseCollectForRedis);
+                courseCollectForRedisList.add(courseCollectForRedis);
+            });
+
+            courseCollectForRedisSet = new HashSet<>(16);
+            for (CourseCollectForRedis courseCollectForRedis : courseCollectForRedisList) {
+                String jsonString = JSON.toJSONString(courseCollectForRedis);
+                opsForZSet.add(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, jsonString, (double) courseCollectForRedis.getGmtCreate().getTime());
+                courseCollectForRedisSet.add(jsonString);
             }
             // 设置过期时间
             redisTemplate.expire(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, 12, TimeUnit.HOURS);
         }
-        List<CourseCollectVo> result = new ArrayList<>(10);
-        // 通过courseId从redis获取对应数据
-        courseIdSet.forEach(courseId -> {
-            String courseForRedisJson = opsForValue.get(COURSE_FOR_REDIS_COURSEID_KEY + courseId);
-            if (StringUtils.isEmpty(courseForRedisJson)) {
+
+        // 课程id信息，方便后面到redis中multiGet课程详细信息。
+        List<String> courseIdKeyList = new ArrayList<>(10);
+
+        Map<String, CourseCollectVo> courseId2CourseCollectVo = courseCollectForRedisSet.stream()
+                .map(jsonString -> JSON.parseObject(jsonString, CourseCollectForRedis.class))
+                .collect(Collectors.toMap(data -> {
+                    courseIdKeyList.add(COURSE_FOR_REDIS_COURSEID_KEY + data.getCourseId());
+                    return data.getCourseId();
+                }, data -> {
+                    String courseId = data.getCourseId();
+                    Date gmtCreate = data.getGmtCreate();
+                    CourseCollectVo courseCollectVo = new CourseCollectVo();
+                    courseCollectVo.setGmtCreate(gmtCreate.toString());
+                    courseCollectVo.setId(courseId);
+                    return courseCollectVo;
+                }));
+
+        // 课程信息json串
+        List<String> courseForRedisJsonString = opsForValue.multiGet(courseIdKeyList);
+        assert !CollectionUtils.isEmpty(courseForRedisJsonString);
+        List<String> courseForRedisJsonStringNotNull = courseForRedisJsonString.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+
+        if (!CollectionUtils.isEmpty(courseForRedisJsonStringNotNull)) {
+            courseForRedisJsonStringNotNull.forEach(courseForRedisJson -> {
+                CourseForRedis courseForRedis = JSON.parseObject(courseForRedisJson, CourseForRedis.class);
+
+                String courseId = courseForRedis.getId();
+                CourseCollectVo courseCollectVo = courseId2CourseCollectVo.get(courseId);
+                BeanUtils.copyProperties(courseForRedis, courseCollectVo);
+                courseId2CourseCollectVo.put(courseId, courseCollectVo);
+
+                courseIdKeyList.remove(COURSE_FOR_REDIS_COURSEID_KEY + courseId);
+            });
+        }
+
+        // 如果courseIdKeyList不为空，说明部分课程信息缓存不存在，需要重新缓存一次
+        if (!CollectionUtils.isEmpty(courseIdKeyList)) {
+            courseIdKeyList.forEach(courseIdKey -> {
+                String courseId = courseIdKey.split(":")[1];
+                // 根据课程id获取分布式锁，避免高并发情况下缓存击穿的情况
                 RLock redissonLock = redisson.getLock(courseId);
                 if (redissonLock.tryLock()) {
                     try {
                         WebCourseVo webCourseVo = courseMapper.selectWebCourseVoById(courseId);
                         if (Objects.isNull(webCourseVo)) {
+                            log.error("can not find webCouseVo, courseId = {}", courseId);
                             return;
                         }
+                        CourseCollectVo courseCollectVo = courseId2CourseCollectVo.get(courseId);
                         CourseForRedis courseForRedis = new CourseForRedis();
                         BeanUtils.copyProperties(webCourseVo, courseForRedis);
 
+                        // 将课程信息缓存到redis中
                         opsForValue.set(COURSE_FOR_REDIS_COURSEID_KEY + courseId, JSON.toJSONString(courseForRedis), 24, TimeUnit.HOURS);
 
-                        CourseCollectVo courseCollectVo = new CourseCollectVo();
                         BeanUtils.copyProperties(courseForRedis, courseCollectVo);
-
-                        addCollectTime(courseCollectVo, userId, courseId);
-
-                        result.add(courseCollectVo);
+                        courseId2CourseCollectVo.put(courseId, courseCollectVo);
 
                     } finally {
                         if (redissonLock.isLocked() && redissonLock.isHeldByCurrentThread()) {
@@ -146,42 +195,25 @@ public class CourseCollectServiceImpl extends ServiceImpl<CourseCollectMapper, C
                     }
                 } else {
                     try {
+                        // 可能其他线程正在执行缓存课程信息操作
                         TimeUnit.MILLISECONDS.sleep(600);
-                        courseForRedisJson = opsForValue.get(COURSE_FOR_REDIS_COURSEID_KEY + courseId);
+                        String courseForRedisJson = opsForValue.get(COURSE_FOR_REDIS_COURSEID_KEY + courseId);
                         if (!StringUtils.isEmpty(courseForRedisJson)) {
                             CourseForRedis courseForRedis = JSON.parseObject(courseForRedisJson, CourseForRedis.class);
-                            CourseCollectVo courseCollectVo = new CourseCollectVo();
+                            CourseCollectVo courseCollectVo = courseId2CourseCollectVo.get(courseId);
+
                             BeanUtils.copyProperties(courseForRedis, courseCollectVo);
 
-                            // 加上收藏时间
-                            addCollectTime(courseCollectVo, userId, courseId);
-
-                            result.add(courseCollectVo);
+                            courseId2CourseCollectVo.put(courseId, courseCollectVo);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-            } else {
-                CourseForRedis courseForRedis = JSON.parseObject(courseForRedisJson, CourseForRedis.class);
-                CourseCollectVo courseCollectVo = new CourseCollectVo();
-                BeanUtils.copyProperties(courseForRedis, courseCollectVo);
+            });
+        }
 
-                addCollectTime(courseCollectVo, userId, courseId);
-
-                result.add(courseCollectVo);
-            }
-        });
-        return result;
-    }
-
-    private void addCollectTime(CourseCollectVo courseCollectVo, String userId, String courseId) {
-        Double score = opsForZSet.score(ZSET_RECORD_ALL_COURSE_COLLECT_BY_USERID_KEY + userId, courseId);
-        assert score != null;
-        BigDecimal bd = new BigDecimal(score.toString());
-        String s = bd.toPlainString();
-        String formatDate = TimeUtils.getFormatDate(Long.parseLong(s));
-        courseCollectVo.setGmtCreate(formatDate);
+        return new ArrayList<>(courseId2CourseCollectVo.values());
     }
 
 

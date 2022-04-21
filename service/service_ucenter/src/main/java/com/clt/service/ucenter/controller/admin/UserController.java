@@ -10,10 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,4 +50,17 @@ public class UserController {
         long total = pageModel.getTotal();
         return R.ok().data("total", total).data("rows", records);
     }
+
+    @PostMapping("forbidden/user/{userId}")
+    public R forbiddenUserAccount(@PathVariable String userId) {
+        userService.forbiddenUserAccount(userId);
+        return R.ok().message("账号禁用成功");
+    }
+
+    @PostMapping("enable/user/{userId}")
+    public R enableUserAccount(@PathVariable String userId) {
+        userService.enableUserAccount(userId);
+        return R.ok().message("账号启用成功");
+    }
+
 }

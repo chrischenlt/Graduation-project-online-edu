@@ -1,6 +1,7 @@
 package com.clt.service.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clt.common.base.enums.BaseEnum;
@@ -307,5 +308,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Page<User> pageParam = new Page<>(page, limit);
 
         return baseMapper.selectPage(pageParam, queryWrapper);
+    }
+
+    @Override
+    public void forbiddenUserAccount(String userId) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq(BaseEnum.ID.getColumn(), userId);
+        updateWrapper.set(UserEnum.IS_DISABLED.getColumn(), "1");
+        baseMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    public void enableUserAccount(String userId) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq(BaseEnum.ID.getColumn(), userId);
+        updateWrapper.set(UserEnum.IS_DISABLED.getColumn(), "0");
+        baseMapper.update(null, updateWrapper);
     }
 }

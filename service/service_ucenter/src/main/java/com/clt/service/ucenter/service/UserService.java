@@ -36,4 +36,7 @@ public interface UserService extends IService<User> {
 
     IPage<User> selectPage(Long page, Long limit, UserQueryVo userQueryVo);
 
+    void forbiddenUserAccount(String userId);
+
+    void enableUserAccount(String userId);
 }

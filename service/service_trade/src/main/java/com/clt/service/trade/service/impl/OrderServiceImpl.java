@@ -211,7 +211,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public IPage<Order> selectPage(Page<Order> pageParam) {
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByAsc(BaseEnum.GMT_CREATE.getColumn());
+        queryWrapper.orderByDesc(BaseEnum.GMT_CREATE.getColumn());
         return baseMapper.selectPage(pageParam, queryWrapper);
     }
 }
